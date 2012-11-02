@@ -9,7 +9,8 @@ The player controls the four investigators simultaneously using each of their un
 
 Why it satisfies github's theme requirements
 --------------------------------------------
-The four investigators' special powers are:
+The four investigators' special powers are
+
     * Telekinetic push
     * Telekinetic pull
     * Time reset
