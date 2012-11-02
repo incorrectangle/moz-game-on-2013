@@ -37,7 +37,7 @@ Flashback (colors, tileset)
 
 <img src="http://www.mobygames.com/images/shots/l/117899-flashback-the-quest-for-identity-snes-screenshot-hmm-how-can.gif" width="224" /> 
 
-<img src="http://www.emuparadise.me/Sega%20Genesis/Snaps/Flashback%20\(J\).png" width="224" /> 
+<img src="http://www.emuparadise.me/Sega%20Genesis/Snaps/Flashback%20(J).png" width="224" /> 
 
 <img src="http://www.mobygames.com/images/shots/l/363485-flashback-the-quest-for-identity-3do-screenshot-saving-your.png" width="224" /> 
 
