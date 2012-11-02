@@ -11,10 +11,10 @@ Why it satisfies github's theme requirements
 --------------------------------------------
 The four investigators' special powers are
 
-    * Telekinetic push
-    * Telekinetic pull
-    * Time reset
-    * Character clone
+* Telekinetic push
+* Telekinetic pull
+* Time reset
+* Character clone
 
 Style, theme, and other inspirations
 --------------------------------
