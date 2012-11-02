@@ -25,7 +25,7 @@ Metroid (music, level design)
 
 Battletoads (humor, hey, it's space)  
 
-<img src="http://coolrom.com/screenshots/nes/Battletoads%20Double%20Dragon%20\(2\).gif" width="224" />
+<img src="http://www.chronicgames.net/images/games/nes/battletoads-screenshot-008.png" width="224" />
 
 This fictional 8bit Metal Gear Solid (color, buildings) 
 
@@ -33,7 +33,11 @@ This fictional 8bit Metal Gear Solid (color, buildings)
 
 Flashback (colors, tileset)
 
-<img src="http://www.atariage.com/Jaguar/screenshots/s_Flashback_7.jpg" width="224" />
-<img src="http://www.mobygames.com/images/shots/l/117899-flashback-the-quest-for-identity-snes-screenshot-hmm-how-can.gif" width="224" />
-<img src="http://www.emuparadise.me/Sega%20Genesis/Snaps/Flashback%20\(J\).png" width="224" />
-<img src="http://www.mobygames.com/images/shots/l/363485-flashback-the-quest-for-identity-3do-screenshot-saving-your.png" width="224" />
+<img src="http://www.atariage.com/Jaguar/screenshots/s_Flashback_7.jpg" width="224" /> 
+
+<img src="http://www.mobygames.com/images/shots/l/117899-flashback-the-quest-for-identity-snes-screenshot-hmm-how-can.gif" width="224" /> 
+
+<img src="http://www.emuparadise.me/Sega%20Genesis/Snaps/Flashback%20\(J\).png" width="224" /> 
+
+<img src="http://www.mobygames.com/images/shots/l/363485-flashback-the-quest-for-identity-3do-screenshot-saving-your.png" width="224" /> 
+
