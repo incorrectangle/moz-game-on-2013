@@ -11,28 +11,29 @@ Crowl is a top down, turn based adventure. It combines fun multiplayer dungeon c
 The player controls the four investigators simultaneously using each of their unique powers to overcome obstacles, monsters and bosses.
 Zelda (layout)  
 
-![zelda screeny](http://www.nerdlets.org/wp-content/uploads/2008/07/zelda.png)
+<img src="http://www.nerdlets.org/wp-content/uploads/2008/07/zelda.png" width="224" />
 
 Nitrome's Tournament (layout, turns, feel) 
 
-![tournament screeny](http://i3.ytimg.com/vi/rAOZUV8S0jk/mqdefault.jpg) 
+<img src="http://i3.ytimg.com/vi/rAOZUV8S0jk/mqdefault.jpg" width="224" /> 
 
 Style, Theme, other Inspirations
 --------------------------------
 Metroid (music, level design) 
 
-![metroid screeny](http://www.mobygames.com/images/shots/l/312628-metroid-nes-screenshot-the-battle-against-the-mother-brain.png)
+<img src="http://www.mobygames.com/images/shots/l/312628-metroid-nes-screenshot-the-battle-against-the-mother-brain.png" width="224" />
 
 Battletoads (humor, hey, it's space)  
 
-![battletoads screeny](http://coolrom.com/screenshots/nes/Battletoads%20Double%20Dragon%20\(2\).gif)
+<img src="http://coolrom.com/screenshots/nes/Battletoads%20Double%20Dragon%20\(2\).gif" width="224" />
 
 This fictional 8bit Metal Gear Solid (color, buildings) 
 
-![bwaah?](http://static02.mediaite.com/geekosystem/uploads/2010/08/mgs4.png)
+<img src="http://static02.mediaite.com/geekosystem/uploads/2010/08/mgs4.png" width="224" />
 
 Flashback (colors, tileset)
 
-![flashback screeny](http://www.atariage.com/Jaguar/screenshots/s_Flashback_7.jpg)
-![flashback screeny](http://www.emuparadise.me/Sega%20Genesis/Snaps/Flashback%20\(J\).png)
-![flashback screeny](http://www.mobygames.com/images/shots/l/363485-flashback-the-quest-for-identity-3do-screenshot-saving-your.png)
+<img src="http://www.atariage.com/Jaguar/screenshots/s_Flashback_7.jpg" width="224" />
+<img src="http://www.mobygames.com/images/shots/l/117899-flashback-the-quest-for-identity-snes-screenshot-hmm-how-can.gif" width="224" />
+<img src="http://www.emuparadise.me/Sega%20Genesis/Snaps/Flashback%20\(J\).png" width="224" />
+<img src="http://www.mobygames.com/images/shots/l/363485-flashback-the-quest-for-identity-3do-screenshot-saving-your.png" width="224" />
