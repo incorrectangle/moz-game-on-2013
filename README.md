@@ -22,6 +22,8 @@ Zelda (layout)
 
 <img src="http://www.nerdlets.org/wp-content/uploads/2008/07/zelda.png" width="224" />
 
+<img src="http://boothammer.com/wordpress/wp-content/uploads/2012/06/lttp-image-4.jpg" width="224" />
+
 Nitrome's Tournament (layout, turns, feel) 
 
 <img src="http://i3.ytimg.com/vi/rAOZUV8S0jk/mqdefault.jpg" width="224" /> 
