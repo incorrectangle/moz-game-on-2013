@@ -1,0 +1,3 @@
+[submodule "submodules/bang"]
+	path = submodules/bang
+	url = git@github.com:schell/bang.git

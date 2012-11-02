@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+        <title>.:Crowl:.</title>
+        <style type="text/css" media="screen">
+            body {
+                    background-color: #AAAAAA;
+        			margin:0px;
+        			font-family: Verdana,Geneva,Arial,sans-serif;
+        			font-size: 12px;
+        			line-height: 15px;
+        		}
+            canvas {
+                background-color:transparent;
+                border: #000000 1px solid;
+            }
+        </style>
+        <script src="submodules/bang/mod.js" type="text/javascript" charset="utf-8"></script>
+        <link rel="shortcut icon" href="favicon.png" />
+    </head>
+    <body id="body">
+        
+        <div id="bang"></div>
+        
+        <script type="text/javascript" charset="utf-8">
+            mod.useTagInjection = true;
+            mod.expansions = {
+                bang : 'submodules/bang/src/',
+                crowl : 'src/'
+            };
+            mod({
+                name : "Main",
+                dependencies : [
+                    'bang::View/View.js',
+                    'bang::View/Stage.js',
+                    'bang::Utils/Ease.js',
+                ],
+                init : function initMain (
+                    View, Stage, Ease
+                ) {
+                    var stage = window.stage = new Stage(320, 320);
+                    document.body.appendChild(stage.canvas);
+                }
+            });
+        </script>
+    </body>
+</html>
