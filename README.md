@@ -25,7 +25,7 @@ Zelda (layout)
 <img src="http://boothammer.com/wordpress/wp-content/uploads/2012/06/lttp-image-4.jpg" width="224" />
 
 Nitrome's Tournament (layout, turns, feel) 
-
+click to play 
 <a href="http://www.nitrome.com/games/turnament/"><img src="http://i3.ytimg.com/vi/rAOZUV8S0jk/mqdefault.jpg" width="224" /></a>
 
 Metroid (music, level design) 
