@@ -9,7 +9,7 @@ Gameplay
 --------
 Crowl is a top down, turn based adventure. It combines fun multiplayer dungeon crawling with a spooky space feel.
 The player controls the four investigators simultaneously using each of their unique powers to overcome obstacles, monsters and bosses.
-* Zelda (layout) ![zelda screeny](http://images4.wikia.nocookie.net/__cb20080101020608/zelda/images/2/22/Gameplay_(The_Legend_of_Zelda).png)
+* Zelda (layout) ![zelda screeny](http://www.nerdlets.org/wp-content/uploads/2008/07/zelda.png)
 * Nitrome's Tournament (layout, turns, feel) ![tournament screeny](http://i3.ytimg.com/vi/rAOZUV8S0jk/mqdefault.jpg) 
 
 Style, Theme, other Inspirations
