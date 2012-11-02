@@ -25,7 +25,7 @@ Metroid (music, level design)
 
 Battletoads (humor, hey, it's space)  
 
-![battletoads screeny](http://coolrom.com/screenshots/nes/Battletoads%20Double%20Dragon%20(2).gif)
+![battletoads screeny](http://coolrom.com/screenshots/nes/Battletoads%20Double%20Dragon%20\(2\).gif)
 
 This fictional 8bit Metal Gear Solid (color, buildings) 
 
@@ -34,5 +34,5 @@ This fictional 8bit Metal Gear Solid (color, buildings)
 Flashback (colors, tileset)
 
 ![flashback screeny](http://www.atariage.com/Jaguar/screenshots/s_Flashback_7.jpg)
-![flashback screeny](http://www.emuparadise.me/Sega%20Genesis/Snaps/Flashback%20(J).png)
+![flashback screeny](http://www.emuparadise.me/Sega%20Genesis/Snaps/Flashback%20\(J\).png)
 ![flashback screeny](http://www.mobygames.com/images/shots/l/363485-flashback-the-quest-for-identity-3do-screenshot-saving-your.png)
