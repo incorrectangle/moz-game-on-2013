@@ -26,8 +26,7 @@ Zelda (layout)
 
 Nitrome's Tournament (layout, turns, feel) 
 
-<img src="http://i3.ytimg.com/vi/rAOZUV8S0jk/mqdefault.jpg" width="224" /> 
-
+<a href="http://www.nitrome.com/games/turnament/"><img src="http://i3.ytimg.com/vi/rAOZUV8S0jk/mqdefault.jpg" width="224" /></a>
 
 Metroid (music, level design) 
 
