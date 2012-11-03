@@ -4,7 +4,7 @@ A moon settlement is sending a faint distress signal to Earth. A four person tea
 
 Gameplay
 --------
-Crowl is a top down, turn based adventure. It combines fun multiplayer dungeon crawling with a spooky space feel.
+This is a top down, turn based adventure. It combines fun multiplayer dungeon crawling with a spooky space feel.
 The player controls the four investigators simultaneously using each of their unique powers to overcome obstacles, monsters and bosses. 
 
 Why it satisfies github's theme requirements
