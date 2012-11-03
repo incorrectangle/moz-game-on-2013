@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-        <title>.:Crowl:.</title>
+        <title>.:Moonening:.</title>
         <style type="text/css" media="screen">
             body {
                     background-color: #AAAAAA;
@@ -10,6 +10,7 @@
         			font-family: Verdana,Geneva,Arial,sans-serif;
         			font-size: 12px;
         			line-height: 15px;
+                    text-align:center;
         		}
             canvas {
                 background-color:transparent;
@@ -27,20 +28,31 @@
             mod.useTagInjection = true;
             mod.expansions = {
                 bang : 'submodules/bang/src/',
-                crowl : 'src/'
+                moon : 'src/'
             };
             mod({
                 name : "Main",
                 dependencies : [
-                    'bang::View/View.js',
                     'bang::View/Stage.js',
-                    'bang::Utils/Ease.js',
+                    'bang::Geometry/Rectangle.js',
+                    'moon::View/Sprite.js',
                 ],
                 init : function initMain (
-                    View, Stage, Ease
+                    Stage, Rectangle, Sprite
                 ) {
                     var stage = window.stage = new Stage(320, 320);
                     document.body.appendChild(stage.canvas);
+
+                    var toon = new Sprite(0, 0, 30, 50, 'img/walk.png');
+                    toon.frames = [
+                        new Rectangle(0,0,30,50),
+                        new Rectangle(30,0,30,50),
+                        new Rectangle(60,0,30,50),
+                        new Rectangle(90,0,30,50)
+                    ];
+                    toon.isPlaying = true;
+                    window.toon = toon;
+                    stage.addView(toon);
                 }
             });
         </script>
