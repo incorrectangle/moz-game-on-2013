@@ -36,20 +36,44 @@
                     'bang::View/Stage.js',
                     'bang::Geometry/Rectangle.js',
                     'moon::View/Sprite.js',
+                    'moon::View/Map.js'
                 ],
                 init : function initMain (
-                    Stage, Rectangle, Sprite
+                    Stage, Rectangle, Sprite, Map
                 ) {
                     var stage = window.stage = new Stage(320, 320);
                     document.body.appendChild(stage.canvas);
 
-                    var toon = new Sprite(0, 0, 30, 50, 'img/walk.png');
-                    toon.frames = [
+                    var map = new Map(0, 0, 160, 160, 'img/terrain.png', [
+                        // tile frames... 
+                        new Rectangle(0,0,16,16),
+                        new Rectangle(16,0,16,16),
+                        new Rectangle(32,0,16,16),
+                        new Rectangle(48,0,16,16),
+                        new Rectangle(60,0,16,16)
+                    ], 20/* map width */, 10/* map height */, [
+                        // tile indices...
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+                        0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0,
+                        0, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 1, 0,
+                        0, 1, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 2, 1, 0,
+                        0, 1, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 2, 1, 0,
+                        0, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 1, 0,
+                        0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0,
+                        0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    ]);
+                    window.map = map;
+                    stage.addView(map);
+
+                    var toon = new Sprite(0, 0, 30, 50, 'img/walk.png', [
                         new Rectangle(0,0,30,50),
                         new Rectangle(30,0,30,50),
                         new Rectangle(60,0,30,50),
                         new Rectangle(90,0,30,50)
-                    ];
+                    ]);
+                    toon.framesPerSecond = 4;
                     toon.isPlaying = true;
                     window.toon = toon;
                     stage.addView(toon);

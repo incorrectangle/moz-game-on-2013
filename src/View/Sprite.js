@@ -82,7 +82,7 @@ mod({
         }  
 
         Sprite.prototype = new View();
-        Sprite.prototype.constructor = View;
+        Sprite.prototype.constructor = Sprite;
         //-----------------------------
         //  METHODS
         //-----------------------------
