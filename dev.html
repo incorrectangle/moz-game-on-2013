@@ -36,10 +36,12 @@
                     'bang::View/Stage.js',
                     'bang::Geometry/Rectangle.js',
                     'moon::View/Sprite.js',
-                    'moon::View/Map.js'
+                    'moon::View/Map.js',
+                    'bang::View/View.js',
+                    'moon::View/Filters.js'
                 ],
                 init : function initMain (
-                    Stage, Rectangle, Sprite, Map
+                    Stage, Rectangle, Sprite, Map, View, Filters
                 ) {
                     var stage = window.stage = new Stage(320, 320);
                     document.body.appendChild(stage.canvas);
@@ -51,12 +53,17 @@
                         new Rectangle(32,0,16,16),
                         new Rectangle(48,0,16,16),
                         new Rectangle(60,0,16,16)
-                    ], 20/* map width */, 10/* map height */, [
+                    ], 20/* map width */, 15/* map height */, [
                         // tile indices...
                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                         0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
                         0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0,
                         0, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 1, 0,
+                        0, 1, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 2, 1, 0,
+                        0, 1, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 2, 1, 0,
+                        0, 1, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 2, 1, 0,
+                        0, 1, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 2, 1, 0,
+                        0, 1, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 2, 1, 0,
                         0, 1, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 2, 1, 0,
                         0, 1, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 2, 1, 0,
                         0, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 1, 0,
@@ -74,9 +81,27 @@
                         new Rectangle(90,0,30,50)
                     ]);
                     toon.framesPerSecond = 4;
-                    toon.isPlaying = true;
+                    toon.isPlaying = false;
                     window.toon = toon;
+
+                    var outline = new View(0,0,30,50);
+                    window.outline = outline;
+                    document.body.appendChild(outline.context.canvas);
                     stage.addView(toon);
+
+                    setTimeout(function() {
+                        outline.context.putImageData(Filters.mapBitmap(toon.context.getImageData(0,0,30,50), function thresh(pixel,imageData) {
+                            if (pixel.a > 0) {
+                                pixel.r = 255;
+                                pixel.g = 255;
+                                pixel.b = 255;
+                                pixel.g = 255;
+                            }
+                            return pixel;
+                        }), 0, 0);
+                    }, 1000);
+
+                    mod.exportAll();
                 }
             });
         </script>
