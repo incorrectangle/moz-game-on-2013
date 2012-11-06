@@ -22,8 +22,6 @@ Style, theme, and other inspirations
 --------------------------------
 Zelda (layout)  
 
-<img src="http://www.nerdlets.org/wp-content/uploads/2008/07/zelda.png" width="224" />
-
 <img src="http://boothammer.com/wordpress/wp-content/uploads/2012/06/lttp-image-4.jpg" width="224" />
 
 Nitrome's Tournament (layout, turns, feel) 
@@ -53,3 +51,6 @@ Flashback (colors, tileset)
 
 <img src="http://www.mobygames.com/images/shots/l/363485-flashback-the-quest-for-identity-3do-screenshot-saving-your.png" width="224" /> 
 
+Le Scaphandrier (8bit fog of war)
+
+<img src="http://i.imgur.com/Xyqco.png" width="320" />
