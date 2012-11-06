@@ -2,7 +2,7 @@ Synopsis
 --------
 A moon settlement is sending a faint distress signal to Earth. A four person team is deployed from one of Earth's satellite bases to investigate the nature of the SOS. After penetrating the colony dome they find the settlement abandoned, but as the team works their way into the colony's spooky infrastructure they encounter formidable evil.
 
-<img src="https://raw.github.com/incorrectangle/game-off-2012/master/img/storyboards/thecolony.jpg" width="400" />
+<img style="border:#333 4px solid" src="https://raw.github.com/incorrectangle/game-off-2012/master/img/storyboards/thecolony.jpg" width="400" />
 
 Gameplay
 --------
@@ -28,6 +28,7 @@ Zelda (layout)
 
 Nitrome's Tournament (layout, turns, feel) 
 click to play 
+
 <a href="http://www.nitrome.com/games/turnament/"><img src="http://i3.ytimg.com/vi/rAOZUV8S0jk/mqdefault.jpg" width="224" /></a>
 
 Metroid (music, level design) 
