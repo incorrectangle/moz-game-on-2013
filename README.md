@@ -2,6 +2,8 @@ Synopsis
 --------
 A moon settlement is sending a faint distress signal to Earth. A four person team is deployed from one of Earth's satellite bases to investigate the nature of the SOS. After penetrating the colony dome they find the settlement abandoned, but as the team works their way into the colony's spooky infrastructure they encounter formidable evil.
 
+<img src="https://github.com/incorrectangle/game-off-2012/tree/master/img/storyboards/thecolony.jpg" width="400" />
+
 Gameplay
 --------
 This is a top down, turn based adventure. It combines fun multiplayer dungeon crawling with a spooky space feel.
