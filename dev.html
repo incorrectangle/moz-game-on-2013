@@ -91,11 +91,37 @@
 
                     setTimeout(function() {
                         outline.context.putImageData(Filters.mapBitmap(toon.context.getImageData(0,0,30,50), function thresh(pixel,imageData) {
-                            if (pixel.a > 0) {
-                                pixel.r = 255;
-                                pixel.g = 255;
-                                pixel.b = 255;
-                                pixel.g = 255;
+                            var width = 2;
+                            var moore = [
+                                Filters.pixelAt(imageData,pixel.x-width,pixel.y-width),
+                                Filters.pixelAt(imageData,pixel.x,pixel.y-width),
+                                Filters.pixelAt(imageData,pixel.x+width,pixel.y-width),
+                                Filters.pixelAt(imageData,pixel.x-width,pixel.y),
+                                Filters.pixelAt(imageData,pixel.x+width,pixel.y),
+                                Filters.pixelAt(imageData,pixel.x-width,pixel.y+width),
+                                Filters.pixelAt(imageData,pixel.x,pixel.y+width),
+                                Filters.pixelAt(imageData,pixel.x+width,pixel.y+width)
+                            ].filter(function(el) {
+                                // Filters out non-pixels...
+                                return el;
+                            });
+
+                            if (pixel.a === 0) {
+                                var count = moore.reduce(function(acc, neighborPixel) {
+                                    if (neighborPixel.a > 0) {
+                                        return acc+1;
+                                    }
+                                    return acc;
+                                }, 0);
+                                pixel.r = 0;
+                                pixel.g = 0;
+                                pixel.b = 0;
+                                pixel.a = count > 1 ? 255 : 0; 
+                            } else {
+                                pixel.r = 0;
+                                pixel.g = 0;
+                                pixel.b = 0;
+                                pixel.a = 0;
                             }
                             return pixel;
                         }), 0, 0);

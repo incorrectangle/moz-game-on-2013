@@ -91,6 +91,12 @@ mod({
         * @param {number} y
         * * **/
         Filters.pixelAt = function Filters_pixelAt(imageData, x, y) {
+            if (x < 0 || x >= imageData.width) {
+                return false;
+            }
+            if (y < 0 || y >= imageData.height) {
+                return false;
+            }
             var pixelNdx = y * imageData.width + x;
             var redChannelNdx = pixelNdx*4;
             var r = imageData.data[redChannelNdx];
