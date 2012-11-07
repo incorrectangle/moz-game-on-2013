@@ -20,6 +20,10 @@ The four investigators' special powers are
 
 Style, theme, and other inspirations
 --------------------------------
+Moon (moon)
+
+<img src="http://www.thinkhero.com/wp-content/uploads/2009/04/moon01.jpg" width="400" />
+
 Zelda (layout)  
 
 <img src="http://boothammer.com/wordpress/wp-content/uploads/2012/06/lttp-image-4.jpg" width="224" />
