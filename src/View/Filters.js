@@ -77,7 +77,11 @@ mod({
             * @type {number}
             * * **/
             this.pixelY = 0;
-
+            /** * *
+            * The pixel's owning ImageData.
+            * @type {ImageData}
+            * * **/
+            this.imageData = false; 
         };
         Filters.Pixel.prototype = {};
         Filters.prototype.constructor = Filters.Pixel;
@@ -108,8 +112,29 @@ mod({
             pixel.redChannelNdx = redChannelNdx;
             pixel.x = x;
             pixel.y = y;
+            pixel.imageData = imageData;
             return pixel;
         };
+        /** * *
+        * Returns the Moore neighborhood of the given Pixel.
+        * @param {number=} width The 'radius' of the neighborhood. Default is one (will return immediate neighboors).
+        * @return {Array.<Pixel>}
+        * * **/
+        Filters.getMoore = function Filters_Moore(pixel, width) {
+            return [
+                Filters.pixelAt(pixel.imageData, pixel.x-width, pixel.y-width),
+                Filters.pixelAt(pixel.imageData, pixel.x,       pixel.y-width),
+                Filters.pixelAt(pixel.imageData, pixel.x+width, pixel.y-width),
+                Filters.pixelAt(pixel.imageData, pixel.x-width, pixel.y),
+                Filters.pixelAt(pixel.imageData, pixel.x+width, pixel.y),
+                Filters.pixelAt(pixel.imageData, pixel.x-width, pixel.y+width),
+                Filters.pixelAt(pixel.imageData, pixel.x,       pixel.y+width),
+                Filters.pixelAt(pixel.imageData, pixel.x+width, pixel.y+width)
+            ].filter(function(el) {
+                // Filters out non-pixels...
+                return el;
+            });
+        }
         /** * *
         * Maps the threshold function over the supplied ImageData and returns a
         * new ImageData representing the results of the threshold mapping.

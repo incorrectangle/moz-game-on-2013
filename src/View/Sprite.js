@@ -90,6 +90,11 @@ mod({
         * Handles the successful load of the sprite sheet.
         * * **/
         Sprite.prototype.onSpriteSheetLoad = function Sprite_onSpriteSheetLoad() {
+            if (this.frames.length === 0) {
+                this.frames = [
+                    new Rectangle(0,0,this.sheet.width,this.sheet.height)
+                ]; 
+            }
             this.updateContextWithCurrentFrame();
         };
         /** * *

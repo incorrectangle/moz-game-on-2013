@@ -57,7 +57,7 @@ mod({
             * The user data map.
             * @type {Array.<number>}
             * * **/
-            this.dataMap = tileMap || [];
+            this.dataMap = dataMap || [];
             /** * *
             * The amount scrolled in x.
             * @type {number}
@@ -127,7 +127,9 @@ mod({
                         var tileMapNdx = this.tileMap[ndx];
                         // The frame of our tile...
                         var frame = this.frames[tileMapNdx];
-                        this.context.drawImage(this.sheet, frame.left(), frame.top(), frame.width(), frame.height(), offsetx, offsety, tileW, tileH);
+                        var frameW = frame.width();
+                        var frameH = frame.height();
+                        this.context.drawImage(this.sheet, frame.left(), frame.top(), frameW, frameH, offsetx, offsety, frameW, frameH);
                     }
                 }
             }

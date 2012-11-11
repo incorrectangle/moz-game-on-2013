@@ -34,98 +34,44 @@
                 name : "Main",
                 dependencies : [
                     'bang::View/Stage.js',
-                    'bang::Geometry/Rectangle.js',
-                    'moon::View/Sprite.js',
-                    'moon::View/Map.js',
-                    'bang::View/View.js',
-                    'moon::View/Filters.js'
+                    'moon::Moonening.js',
+                    'moon::Dev/Levelator.js'
                 ],
-                init : function initMain (
-                    Stage, Rectangle, Sprite, Map, View, Filters
-                ) {
-                    var stage = window.stage = new Stage(320, 320);
+                init : function initMain (Stage, Moonening, Levelator) {
+                    var stage = window.stage = new Stage(512, 512);
                     document.body.appendChild(stage.canvas);
+                    
+                    var moon = new Moonening();
+                    window.moon = moon;
+                    stage.addView(moon);
 
-                    var map = new Map(0, 0, 160, 160, 'img/terrain.png', [
-                        // tile frames... 
-                        new Rectangle(0,0,16,16),
-                        new Rectangle(16,0,16,16),
-                        new Rectangle(32,0,16,16),
-                        new Rectangle(48,0,16,16),
-                        new Rectangle(60,0,16,16)
-                    ], 20/* map width */, 15/* map height */, [
-                        // tile indices...
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-                        0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0,
-                        0, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 1, 0,
-                        0, 1, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 2, 1, 0,
-                        0, 1, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 2, 1, 0,
-                        0, 1, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 2, 1, 0,
-                        0, 1, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 2, 1, 0,
-                        0, 1, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 2, 1, 0,
-                        0, 1, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 2, 1, 0,
-                        0, 1, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 2, 1, 0,
-                        0, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 1, 0,
-                        0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0,
-                        0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    ]);
-                    window.map = map;
-                    stage.addView(map);
+                    var level = new Levelator();
+                    window.level = level;
+                    //stage.addView(level);
 
-                    var toon = new Sprite(0, 0, 30, 50, 'img/walk.png', [
-                        new Rectangle(0,0,30,50),
-                        new Rectangle(30,0,30,50),
-                        new Rectangle(60,0,30,50),
-                        new Rectangle(90,0,30,50)
-                    ]);
-                    toon.framesPerSecond = 4;
-                    toon.isPlaying = false;
-                    window.toon = toon;
-
-                    var outline = new View(0,0,30,50);
-                    window.outline = outline;
-                    document.body.appendChild(outline.context.canvas);
-                    stage.addView(toon);
-
-                    setTimeout(function() {
-                        outline.context.putImageData(Filters.mapBitmap(toon.context.getImageData(0,0,30,50), function thresh(pixel,imageData) {
-                            var width = 2;
-                            var moore = [
-                                Filters.pixelAt(imageData,pixel.x-width,pixel.y-width),
-                                Filters.pixelAt(imageData,pixel.x,pixel.y-width),
-                                Filters.pixelAt(imageData,pixel.x+width,pixel.y-width),
-                                Filters.pixelAt(imageData,pixel.x-width,pixel.y),
-                                Filters.pixelAt(imageData,pixel.x+width,pixel.y),
-                                Filters.pixelAt(imageData,pixel.x-width,pixel.y+width),
-                                Filters.pixelAt(imageData,pixel.x,pixel.y+width),
-                                Filters.pixelAt(imageData,pixel.x+width,pixel.y+width)
-                            ].filter(function(el) {
-                                // Filters out non-pixels...
-                                return el;
-                            });
-
-                            if (pixel.a === 0) {
-                                var count = moore.reduce(function(acc, neighborPixel) {
-                                    if (neighborPixel.a > 0) {
-                                        return acc+1;
-                                    }
-                                    return acc;
-                                }, 0);
-                                pixel.r = 0;
-                                pixel.g = 0;
-                                pixel.b = 0;
-                                pixel.a = count > 1 ? 255 : 0; 
-                            } else {
-                                pixel.r = 0;
-                                pixel.g = 0;
-                                pixel.b = 0;
-                                pixel.a = 0;
-                            }
-                            return pixel;
-                        }), 0, 0);
-                    }, 1000);
+                    //setTimeout(function() {
+                    //    outline.context.putImageData(Filters.mapBitmap(toon.context.getImageData(0,0,30,50), function thresh(pixel,imageData) {
+                    //        var width = 2;
+                    //        if (pixel.a === 0) {
+                    //            var count = Filters.getMoore(pixel, 2).reduce(function(acc, neighborPixel) {
+                    //                if (neighborPixel.a > 0) {
+                    //                    return acc+1;
+                    //                }
+                    //                return acc;
+                    //            }, 0);
+                    //            pixel.r = 0;
+                    //            pixel.g = 0;
+                    //            pixel.b = 0;
+                    //            pixel.a = count > 1 ? 255 : 0; 
+                    //        } else {
+                    //            pixel.r = 0;
+                    //            pixel.g = 0;
+                    //            pixel.b = 0;
+                    //            pixel.a = 0;
+                    //        }
+                    //        return pixel;
+                    //    }), 0, 0);
+                    //}, 1000);
 
                     mod.exportAll();
                 }
