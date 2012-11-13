@@ -1,7 +1,7 @@
 THE MOONENING
 =============
 
-<img src="img/title.png" alt="title" />
+<img src="https://raw.github.com/incorrectangle/game-off-2012/master/img/title.png" alt="title" />
 
 Synopsis
 --------
