@@ -16,7 +16,7 @@ mod({
     * Initializes the Sprite constructor.
     * @param {function():View}
     * * **/
-    init : function initSpriteConstructor(View) {
+    init : function initSpriteConstructor(View, Rectangle) {
         /** * *
         * Constructs new sprites.
         * @constructor

@@ -13,12 +13,13 @@ mod({
         'moon::View/Map.js',
         'moon::Data/MapData.js',
         'bang::View/View.js',
-        'bang::Geometry/Rectangle.js'
+        'bang::Geometry/Rectangle.js',
+        'bang::Utils/Ease.js'
     ],
     /** * *
     * Initializes the Moonening constructor.
     * * **/
-    init : function initMooneningConstructor(Astronaut, Map, MapData, View, Rectangle) {
+    init : function initMooneningConstructor(Astronaut, Map, MapData, View, Rectangle, Ease) {
         /** * *
         * Constructs new Moonenings.
         * @constructor
