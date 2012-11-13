@@ -1,1 +1,78 @@
-Hiya.
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+        <title>.:Moonening:.</title>
+        <style type="text/css" media="screen">
+            body {
+                    background-color: #AAAAAA;
+        			margin:0px;
+        			font-family: Verdana,Geneva,Arial,sans-serif;
+        			font-size: 12px;
+        			line-height: 15px;
+                    text-align:center;
+        		}
+            canvas {
+                background-color:transparent;
+                border: #000000 1px solid;
+            }
+        </style>
+        <script src="submodules/bang/mod.js" type="text/javascript" charset="utf-8"></script>
+        <link rel="shortcut icon" href="favicon.png" />
+    </head>
+    <body id="body">
+        
+        <div id="bang"></div>
+        
+        <script type="text/javascript" charset="utf-8">
+            mod.useTagInjection = true;
+            mod.expansions = {
+                bang : 'submodules/bang/src/',
+                moon : 'src/'
+            };
+            mod({
+                name : "Main",
+                dependencies : [
+                    'bang::View/Stage.js',
+                    'moon::Moonening.js',
+                    'moon::Dev/Levelator.js'
+                ],
+                init : function initMain (Stage, Moonening, Levelator) {
+                    var stage = window.stage = new Stage(512, 512);
+                    document.body.appendChild(stage.canvas);
+                    
+                    var moon = new Moonening();
+                    window.moon = moon;
+                    stage.addView(moon);
+
+                    var level = new Levelator();
+                    window.level = level;
+
+                    //setTimeout(function() {
+                    //    outline.context.putImageData(Filters.mapBitmap(toon.context.getImageData(0,0,30,50), function thresh(pixel,imageData) {
+                    //        var width = 2;
+                    //        if (pixel.a === 0) {
+                    //            var count = Filters.getMoore(pixel, 2).reduce(function(acc, neighborPixel) {
+                    //                if (neighborPixel.a > 0) {
+                    //                    return acc+1;
+                    //                }
+                    //                return acc;
+                    //            }, 0);
+                    //            pixel.r = 0;
+                    //            pixel.g = 0;
+                    //            pixel.b = 0;
+                    //            pixel.a = count > 1 ? 255 : 0; 
+                    //        } else {
+                    //            pixel.r = 0;
+                    //            pixel.g = 0;
+                    //            pixel.b = 0;
+                    //            pixel.a = 0;
+                    //        }
+                    //        return pixel;
+                    //    }), 0, 0);
+                    //}, 1000);
+                }
+            });
+        </script>
+    </body>
+</html>

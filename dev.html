@@ -34,25 +34,43 @@
                 name : "Main",
                 dependencies : [
                     'bang::View/Stage.js',
-                    'bang::Geometry/Rectangle.js',
-                    'moon::View/Sprite.js',
+                    'moon::Moonening.js',
+                    'moon::Dev/Levelator.js'
                 ],
-                init : function initMain (
-                    Stage, Rectangle, Sprite
-                ) {
-                    var stage = window.stage = new Stage(320, 320);
+                init : function initMain (Stage, Moonening, Levelator) {
+                    var stage = window.stage = new Stage(512, 512);
                     document.body.appendChild(stage.canvas);
+                    
+                    var moon = new Moonening();
+                    window.moon = moon;
+                    stage.addView(moon);
 
-                    var toon = new Sprite(0, 0, 30, 50, 'img/walk.png');
-                    toon.frames = [
-                        new Rectangle(0,0,30,50),
-                        new Rectangle(30,0,30,50),
-                        new Rectangle(60,0,30,50),
-                        new Rectangle(90,0,30,50)
-                    ];
-                    toon.isPlaying = true;
-                    window.toon = toon;
-                    stage.addView(toon);
+                    var level = new Levelator();
+                    window.level = level;
+
+                    //setTimeout(function() {
+                    //    outline.context.putImageData(Filters.mapBitmap(toon.context.getImageData(0,0,30,50), function thresh(pixel,imageData) {
+                    //        var width = 2;
+                    //        if (pixel.a === 0) {
+                    //            var count = Filters.getMoore(pixel, 2).reduce(function(acc, neighborPixel) {
+                    //                if (neighborPixel.a > 0) {
+                    //                    return acc+1;
+                    //                }
+                    //                return acc;
+                    //            }, 0);
+                    //            pixel.r = 0;
+                    //            pixel.g = 0;
+                    //            pixel.b = 0;
+                    //            pixel.a = count > 1 ? 255 : 0; 
+                    //        } else {
+                    //            pixel.r = 0;
+                    //            pixel.g = 0;
+                    //            pixel.b = 0;
+                    //            pixel.a = 0;
+                    //        }
+                    //        return pixel;
+                    //    }), 0, 0);
+                    //}, 1000);
                 }
             });
         </script>
