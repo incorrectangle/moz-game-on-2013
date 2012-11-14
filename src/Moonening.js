@@ -115,15 +115,19 @@ mod({
             var self = this;
             document.body.onkeydown = function(e) {
                 switch (e.keyCode) {
+                    case 38: // up-arrow
                     case 71: // g 
                         self.playerPosition[1]--;
                     break;
+                    case 39: // right-arrow 
                     case 70: // f
                         self.playerPosition[0]++;
                     break;
+                    case 40: // down-arrow
                     case 77: // m
                         self.playerPosition[1]++;
                     break;
+                    case 37: // left-arrow
                     case 68: // d
                         self.playerPosition[0]--;
                     break;
