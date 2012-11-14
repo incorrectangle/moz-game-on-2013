@@ -14,12 +14,13 @@ mod({
         'moon::Data/MapData.js',
         'bang::View/View.js',
         'bang::Geometry/Rectangle.js',
-        'bang::Utils/Ease.js'
+        'bang::Utils/Ease.js',
+        'bang::Geometry/Vector.js',
     ],
     /** * *
     * Initializes the Moonening constructor.
     * * **/
-    init : function initMooneningConstructor(Astronaut, Map, MapData, View, Rectangle, Ease) {
+    init : function initMooneningConstructor(Astronaut, Map, MapData, View, Rectangle, Ease, Vector) {
         /** * *
         * Constructs new Moonenings.
         * @constructor
@@ -97,18 +98,12 @@ mod({
             this.mapSelector.context.strokeRect(0,0,32,32);
             this.addView(this.mapSelector);
             /** * *
-            * The player's position.
-            * @type {Object.<string, number>}
-            * * **/
-            this.playerPosition = {
-                x : 0,
-                y : 4
-            };
-            /** * *
             * The main player character.
             * @type {Astronaut}
             * * **/    
-            this.player = new Astronaut(this.playerPosition.x*32,this.playerPosition.y*32);
+            this.player = new Astronaut(0,4*32);
+            this.player.position.x(0);
+            this.player.position.y(4);
             this.addView(this.player); 
             /** * *
             * Whether or not the game is suspended.
@@ -118,33 +113,30 @@ mod({
         
             var self = this;
             document.body.onkeydown = function(e) {
-                var nextPos = {
-                    x : self.playerPosition.x,
-                    y : self.playerPosition.y
-                };
+                var nextPos = self.player.position.copy(); 
 
                 switch (e.keyCode) {
                     case 38: // up-arrow
                     case 71: // g 
-                        nextPos.y--;
+                        nextPos.y(nextPos.y()-1);
                     break;
                     case 39: // right-arrow 
                     case 70: // f
-                        nextPos.x++;
+                        nextPos.x(nextPos.x()+1);
                     break;
                     case 40: // down-arrow
                     case 77: // m
-                        nextPos.y++;
+                        nextPos.y(nextPos.y()+1);
                     break;
                     case 37: // left-arrow
                     case 68: // d
-                        nextPos.x--;
+                        nextPos.x(nextPos.x()-1);
                     break;
 
                     default:
                         console.log('unknown keyCode:',e.keyCode);
                 }
-                self.determinePlayerPosition(nextPos.x, nextPos.y);
+                self.determinePlayerPosition(nextPos);
             };
                     
         }
@@ -155,15 +147,16 @@ mod({
         //-----------------------------
         /** * *
         * Determines the player position given the request to move to x, y.
-        * @param {number} x
-        * @param {number} y
+        * @param {Vector} p
         * * **/
-        Moonening.prototype.determinePlayerPosition = function Moonening_determinePlayerPosition(x, y) {
+        Moonening.prototype.determinePlayerPosition = function Moonening_determinePlayerPosition(p) {
+            var x = p.x();
+            var y = p.y();
             // Make sure the player can't jump more than one square... 
-            if (Math.abs(this.playerPosition.x - x) > 1 ) {
+            if (Math.abs(this.player.position.x() - x) > 1 ) {
                 return;
             }
-            if (Math.abs(this.playerPosition.y - y) > 1) {
+            if (Math.abs(this.player.position.y() - y) > 1) {
                 return;
             }
             // Make sure the positions are in the map bounds...
@@ -179,8 +172,7 @@ mod({
             if (mapData.isWall) {
                 return;
             }
-            this.playerPosition.x = x;
-            this.playerPosition.y = y;
+            this.player.position = p;
         };
         /** * *
         * Animates a player moving to a spot.
@@ -193,7 +185,7 @@ mod({
             var move = new Ease({
                 target : this.player,
                 duration : 400,
-                equation : Ease.easeOutCirc,
+                equation : Ease.easeInOutCirc,
                 properties : {
                     x : x,
                     y : y
@@ -210,33 +202,29 @@ mod({
         Moonening.prototype.draw = function Moonening_draw(context) {
             if (!this.suspended) {
                 // Put the player in the right place...
-                var nextXPos = 32*this.playerPosition.x;
+                var nextXPos = 32*this.player.position.x();
                 if (this.player.x !== nextXPos) {
                     this.suspended = true;
-                    //this.player.hover.cancel();
                     if (this.player.x < nextXPos) { 
                         this.player.toon.currentSpriteNdx = 5;
                     } else {
                         this.player.toon.currentSpriteNdx = 6;
                     }
-                    this.movePlayerTo(32*this.playerPosition.x, this.player.y, function moveXCallback() {
+                    this.movePlayerTo(nextXPos, this.player.y, function moveXCallback() {
                         this.suspended = false;
-                        //this.player.hover.interpolate();
                         this.player.toon.currentSpriteNdx -= 4;
                     }); 
                 }
-                var nextYPos = 32*this.playerPosition.y;
+                var nextYPos = 32*this.player.position.y();
                 if (this.player.y !== nextYPos) {
                     this.suspended = true;
-                    //this.player.hover.cancel();
                     if (this.player.y < nextYPos) { 
                         this.player.toon.currentSpriteNdx = 4;
                     } else {
                         this.player.toon.currentSpriteNdx = 7;
                     }
-                    this.movePlayerTo(this.player.x, 32*this.playerPosition.y, function moveYCallback() {
+                    this.movePlayerTo(this.player.x, nextYPos, function moveYCallback() {
                         this.suspended = false;
-                        //this.player.hover.interpolate();
                         this.player.toon.currentSpriteNdx -= 4;
                     }); 
                 }

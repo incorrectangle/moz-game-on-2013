@@ -51,12 +51,14 @@ mod({
         * @param {CanvasRenderingContext2D}
         * * **/
         Toon.prototype.draw = function Toon_draw(context) {
-            for (var i=0; i < this.sprites.length; i++) {
-                if (i !== this.currentSpriteNdx && this.displayList.indexOf(this.sprites[i]) !== -1) {
-                    this.removeView(this.sprites[i]);        
+            if (this.sprites.length) {
+                for (var i=0; i < this.sprites.length; i++) {
+                    if (i !== this.currentSpriteNdx && this.displayList.indexOf(this.sprites[i]) !== -1) {
+                        this.removeView(this.sprites[i]);        
+                    }
                 }
+                this.addView(this.sprites[this.currentSpriteNdx]);
             }
-            this.addView(this.sprites[this.currentSpriteNdx]);
             View.prototype.draw.call(this, context);
         };
         return Toon;

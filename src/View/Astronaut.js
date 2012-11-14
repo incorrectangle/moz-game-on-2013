@@ -68,7 +68,7 @@ mod({
             this.context.strokeStyle = 'rgba(255,0,0,0.5)';
             this.context.strokeRect(0,0,32,32);
             this.addView(shadow);
-            this.addView(toon);
+            this.addView(this.toon);
             this.hover = this.idleHover(startX, startY).interpolate();
         }
 
