@@ -62,6 +62,7 @@ mod({
                     case 5: // A wall...
                     case 6: // A wall...
                     case 7: // A wall...
+                    case 8: // A wall...
                         data.isWall = true;
                     break;
 
@@ -97,14 +98,17 @@ mod({
             this.addView(this.mapSelector);
             /** * *
             * The player's position.
-            * @type {Array.<number>}
+            * @type {Object.<string, number>}
             * * **/
-            this.playerPosition = [0,4];
+            this.playerPosition = {
+                x : 0,
+                y : 4
+            };
             /** * *
             * The main player character.
             * @type {Astronaut}
             * * **/    
-            this.player = new Astronaut(this.playerPosition[0]*32,this.playerPosition[1]*32);
+            this.player = new Astronaut(this.playerPosition.x*32,this.playerPosition.y*32);
             this.addView(this.player); 
             /** * *
             * Whether or not the game is suspended.
@@ -114,27 +118,33 @@ mod({
         
             var self = this;
             document.body.onkeydown = function(e) {
+                var nextPos = {
+                    x : self.playerPosition.x,
+                    y : self.playerPosition.y
+                };
+
                 switch (e.keyCode) {
                     case 38: // up-arrow
                     case 71: // g 
-                        self.playerPosition[1]--;
+                        nextPos.y--;
                     break;
                     case 39: // right-arrow 
                     case 70: // f
-                        self.playerPosition[0]++;
+                        nextPos.x++;
                     break;
                     case 40: // down-arrow
                     case 77: // m
-                        self.playerPosition[1]++;
+                        nextPos.y++;
                     break;
                     case 37: // left-arrow
                     case 68: // d
-                        self.playerPosition[0]--;
+                        nextPos.x--;
                     break;
 
                     default:
                         console.log('unknown keyCode:',e.keyCode);
                 }
+                self.determinePlayerPosition(nextPos.x, nextPos.y);
             };
                     
         }
@@ -143,6 +153,35 @@ mod({
         //-----------------------------
         //  METHODS
         //-----------------------------
+        /** * *
+        * Determines the player position given the request to move to x, y.
+        * @param {number} x
+        * @param {number} y
+        * * **/
+        Moonening.prototype.determinePlayerPosition = function Moonening_determinePlayerPosition(x, y) {
+            // Make sure the player can't jump more than one square... 
+            if (Math.abs(this.playerPosition.x - x) > 1 ) {
+                return;
+            }
+            if (Math.abs(this.playerPosition.y - y) > 1) {
+                return;
+            }
+            // Make sure the positions are in the map bounds...
+            if (x >= this.map.mapW) {
+                return;
+            }
+            if (y >= this.map.mapH) {
+                return;
+            }
+            // Make sure the new position isn't in a wall...
+            var ndx = y*this.map.mapW + x;
+            var mapData = this.map.dataMap[ndx];
+            if (mapData.isWall) {
+                return;
+            }
+            this.playerPosition.x = x;
+            this.playerPosition.y = y;
+        };
         /** * *
         * Animates a player moving to a spot.
         * @param {number} x
@@ -154,7 +193,7 @@ mod({
             var move = new Ease({
                 target : this.player,
                 duration : 400,
-                equation : Ease.easeInOutCirc,
+                equation : Ease.easeOutCirc,
                 properties : {
                     x : x,
                     y : y
@@ -171,7 +210,7 @@ mod({
         Moonening.prototype.draw = function Moonening_draw(context) {
             if (!this.suspended) {
                 // Put the player in the right place...
-                var nextXPos = 32*this.playerPosition[0];
+                var nextXPos = 32*this.playerPosition.x;
                 if (this.player.x !== nextXPos) {
                     this.suspended = true;
                     //this.player.hover.cancel();
@@ -180,13 +219,13 @@ mod({
                     } else {
                         this.player.toon.currentSpriteNdx = 6;
                     }
-                    this.movePlayerTo(32*this.playerPosition[0], this.player.y, function moveXCallback() {
+                    this.movePlayerTo(32*this.playerPosition.x, this.player.y, function moveXCallback() {
                         this.suspended = false;
                         //this.player.hover.interpolate();
                         this.player.toon.currentSpriteNdx -= 4;
                     }); 
                 }
-                var nextYPos = 32*this.playerPosition[1];
+                var nextYPos = 32*this.playerPosition.y;
                 if (this.player.y !== nextYPos) {
                     this.suspended = true;
                     //this.player.hover.cancel();
@@ -195,7 +234,7 @@ mod({
                     } else {
                         this.player.toon.currentSpriteNdx = 7;
                     }
-                    this.movePlayerTo(this.player.x, 32*this.playerPosition[1], function moveYCallback() {
+                    this.movePlayerTo(this.player.x, 32*this.playerPosition.y, function moveYCallback() {
                         this.suspended = false;
                         //this.player.hover.interpolate();
                         this.player.toon.currentSpriteNdx -= 4;
