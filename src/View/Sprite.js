@@ -44,6 +44,11 @@ mod({
             * * **/
             this.frames = frames || [];
             /** * *
+            * A list of objects  of strings->functions to play on a given frame.
+            * @type {Array.<Object.<string, function>>}
+            * * **/
+           this.frameFunctions = this.frameFunctions || [];
+            /** * *
             * The loaded sprite sheet.
             * @type {Image}
             * * **/
@@ -143,15 +148,22 @@ mod({
         * * **/
         Sprite.prototype.draw = function View_draw(context) {
             if (this.isPlaying) {
-               var framesElapsed = this.numberOfFramesSince(this.lastFrameTimeStamp);
-               var nextFrame = framesElapsed + this.currentFrameIndex;
-               if (nextFrame >= this.frames.length) {
-                   nextFrame = nextFrame % this.frames.length;
-               }
+                var framesElapsed = this.numberOfFramesSince(this.lastFrameTimeStamp);
+                var nextFrame = framesElapsed + this.currentFrameIndex;
+                if (nextFrame >= this.frames.length) {
+                    nextFrame = nextFrame % this.frames.length;
+                }
+                
 
-               this.currentFrameIndex = nextFrame; 
-               this.updateContextWithCurrentFrame();
-               this.lastFrameTimeStamp = Date.now();
+                this.currentFrameIndex = nextFrame; 
+                this.updateContextWithCurrentFrame();
+                this.lastFrameTimeStamp = Date.now();
+
+                var ndx = Math.floor(this.currentFrameIndex);
+                // Play the frame functions...
+                for (var funcName in this.frameFunctions[ndx]) {
+                    this.frameFunctions[ndx][funcName]();            
+                }
             }
             View.prototype.draw.call(this, context);
         };

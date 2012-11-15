@@ -42,22 +42,22 @@ mod({
             * The map width.
             * @type {number}
             * * **/
-            this.mapW = mapW || 0;
+            this.mapW = mapW || this.mapW || 0;
             /** * *
             * The map height.
             * @type {number}
             * * **/
-            this.mapH = mapH || 0;
+            this.mapH = mapH || this.mapH || 0;
             /** * *
             * The tile map.
             * @type {Array.<number>}
             * * **/
-            this.tileMap = tileMap || [];        
+            this.tileMap = tileMap || this.tileMap || [];        
             /** * *
             * The user data map.
             * @type {Array.<number>}
             * * **/
-            this.dataMap = dataMap || [];
+            this.dataMap = dataMap || this.dataMap || [];
             /** * *
             * The amount scrolled in x.
             * @type {number}

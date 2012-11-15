@@ -16,11 +16,12 @@ mod({
         'bang::Geometry/Rectangle.js',
         'bang::Utils/Ease.js',
         'bang::Geometry/Vector.js',
+        'moon::View/MoonenMinor.js'
     ],
     /** * *
     * Initializes the Moonening constructor.
     * * **/
-    init : function initMooneningConstructor(Astronaut, Map, MapData, View, Rectangle, Ease, Vector) {
+    init : function initMooneningConstructor(Astronaut, Map, MapData, View, Rectangle, Ease, Vector, MoonenMinor) {
         /** * *
         * Constructs new Moonenings.
         * @constructor
@@ -28,9 +29,7 @@ mod({
         * @return {Moonening}
         * * **/ 
         function Moonening() {
-            View.apply(this, arguments);
-
-            var tileIndices = [
+            var tileMap = [
                 // tile indices...
                 2, 2, 2, 2, 2, 2, 2, 3, 4, 5, 2, 2, 2, 2, 2, 7, 
                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 8, 
@@ -49,7 +48,7 @@ mod({
                 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 8, 
                 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 8, 
             ];
-            var mapData = tileIndices.map(function mapTileIndicesToData(ndx) {
+            var dataMap = tileMap.map(function mapTileIndicesToData(ndx) {
                 var data = new MapData();
                 switch (ndx) {
                     case 0: // A floor tile...
@@ -72,11 +71,7 @@ mod({
                 }
                 return data;
             });
-            /** * *
-            * The ground map.
-            * @type {Map}
-            * * **/
-            this.map = new Map(0, 0, 512, 512, 'img/tiles.png', [
+            Map.call(this, 0, 0, 512, 512, 'img/tiles.png', [
                 // tile frames... 
                 new Rectangle(0,0,32,32), // 0 - floor
                 new Rectangle(511,511,1,1), // 1 - clear
@@ -87,8 +82,7 @@ mod({
                 new Rectangle(160,0,32,96), // 6 - wall end (if going vert)
                 new Rectangle(192,0,32,32), // 7 - wall (top vert)
                 new Rectangle(192,32,32,32), // 8 - wall vert repeating
-            ], 16 /* map width */, 16 /* map height */, tileIndices, mapData);
-            this.addView(this.map);
+            ], 16 /* map width */, 16 /* map height */, tileMap, dataMap);
             /** * *
             * The map selector.
             * @type {View}
@@ -97,6 +91,10 @@ mod({
             this.mapSelector.context.strokeStyle = 'rgba(0, 255, 0, 0.5)';
             this.mapSelector.context.strokeRect(0,0,32,32);
             this.addView(this.mapSelector);
+            
+            // A badguy
+            this.badguy = new MoonenMinor(32,4*32);
+            this.addView(this.badguy);
             /** * *
             * The main player character.
             * @type {Astronaut}
@@ -105,6 +103,7 @@ mod({
             this.player.position.x(0);
             this.player.position.y(4);
             this.addView(this.player); 
+
             /** * *
             * Whether or not the game is suspended.
             * @type {Boolean}
@@ -140,7 +139,7 @@ mod({
             };
                     
         }
-        Moonening.prototype = new View(); 
+        Moonening.prototype = new Map(); 
         Moonening.prototype.constructor = Moonening;
         //-----------------------------
         //  METHODS
@@ -160,15 +159,15 @@ mod({
                 return;
             }
             // Make sure the positions are in the map bounds...
-            if (x >= this.map.mapW) {
+            if (x >= this.mapW) {
                 return;
             }
-            if (y >= this.map.mapH) {
+            if (y >= this.mapH) {
                 return;
             }
             // Make sure the new position isn't in a wall...
-            var ndx = y*this.map.mapW + x;
-            var mapData = this.map.dataMap[ndx];
+            var ndx = y*this.mapW + x;
+            var mapData = this.dataMap[ndx];
             if (mapData.isWall) {
                 return;
             }
@@ -229,7 +228,7 @@ mod({
                     }); 
                 }
             }
-            View.prototype.draw.call(this,context);
+            Map.prototype.draw.call(this,context);
         };
 
         return Moonening;
