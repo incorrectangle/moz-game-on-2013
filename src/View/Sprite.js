@@ -153,8 +153,11 @@ mod({
                 if (nextFrame >= this.frames.length) {
                     nextFrame = nextFrame % this.frames.length;
                 }
-                
 
+                var floorNdx = Math.floor(this.currentFrameIndex);
+                if (floorNdx !== Math.floor(nextFrame)) {
+                    this.stage.needsDisplay = true;
+                }
                 this.currentFrameIndex = nextFrame; 
                 this.updateContextWithCurrentFrame();
                 this.lastFrameTimeStamp = Date.now();

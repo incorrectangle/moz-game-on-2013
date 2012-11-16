@@ -83,6 +83,7 @@ mod({
                 new Rectangle(192,0,32,32), // 7 - wall (top vert)
                 new Rectangle(192,32,32,32), // 8 - wall vert repeating
             ], 16 /* map width */, 16 /* map height */, tileMap, dataMap);
+
             /** * *
             * The map selector.
             * @type {View}
