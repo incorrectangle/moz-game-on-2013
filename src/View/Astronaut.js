@@ -34,26 +34,12 @@ mod({
             this.toon = new Toon(startX, startY, 32,32, [
                 new Sprite(0, 0, 32, 32, 'img/tiles.png', [
                     new Rectangle(0, 96+0*32, 32, 32), // 0 - forward
-                ]),
-                new Sprite(0, 0, 32, 32, 'img/tiles.png', [
                     new Rectangle(0, 96+1*32, 32, 32), // 1 - right
-                ]),
-                new Sprite(0, 0, 32, 32, 'img/tiles.png', [
                     new Rectangle(0, 96+2*32, 32, 32), // 2 - left
-                ]),
-                new Sprite(0, 0, 32, 32, 'img/tiles.png', [
                     new Rectangle(0, 96+3*32, 32, 32), // 3 - backward
-                ]),
-                new Sprite(0, 0, 32, 32, 'img/tiles.png', [
                     new Rectangle(32, 96+0*32, 32, 32), // 4 - forward (spray) 
-                ]),
-                new Sprite(0, 0, 32, 32, 'img/tiles.png', [
                     new Rectangle(32, 96+1*32, 32, 32), // 5 - right (spray)
-                ]),
-                new Sprite(0, 0, 32, 32, 'img/tiles.png', [
                     new Rectangle(32, 96+2*32, 32, 32), // 6 - left (spray)
-                ]),
-                new Sprite(0, 0, 32, 32, 'img/tiles.png', [
                     new Rectangle(32, 96+3*32, 32, 32), // 7 - backward (spray)
                 ])
             ]);

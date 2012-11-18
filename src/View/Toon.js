@@ -28,38 +28,55 @@ mod({
         * @return {Toon}
         * * **/ 
         function Toon(x, y, w, h, sprites) {
-           View.call(this, x, y, w, h);
+            Sprite.call(this, x, y, w, h);
 
-           /** * *
-           * An array of sprites that the toon can play.
-           * @type {Array.<Sprite>} 
-           * * **/
-           this.sprites = sprites || [];
-           /** * *
-           * The index of the sprite that is currently showing.
-           * @type {number}
-           * * **/
-           this.currentSpriteNdx = 0;
+            /** * *
+            * The sprites.
+            * @type {Array.<Sprite>}
+            * * **/
+            this.sprites = sprites || [];
+            for (var i=0; i < this.sprites.length; i++) {
+                this.addView(this.sprites[i]);
+            }
+            /** * *
+            * The index of the sprite that is currently showing.
+            * @type {number}
+            * * **/
+            if (typeof this.__defineGetter__ === 'function') {
+                this._spriteNdx = 0;
+                this.__defineGetter__('spriteNdx', function getspriteNdx() {
+                    return this._spriteNdx;
+                });
+                this.__defineSetter__('spriteNdx', function setspriteNdx(spriteNdx) {
+                    for (var i=0; i < this.sprites.length; i++) {
+                        if (i === spriteNdx) {
+                            this.sprites[i].isVisible = true;
+                        }
+                        this.sprites[i].isVisible = false;
+                    }
+                    this._spriteNdx = spriteNdx;
+                });
+            } else {
+                this.spriteNdx = 0;
+            }
         }
-        Toon.prototype = new View(); 
+        Toon.prototype = new Sprite(); 
         Toon.prototype.constructor = Toon;
         //-----------------------------
         //  METHODS
         //-----------------------------
         /** * *
-        * Draws this view and its subviews into the given context.
-        * @param {CanvasRenderingContext2D}
+        * The step function!
         * * **/
-        Toon.prototype.draw = function Toon_draw(context) {
+        Toon.prototype.step = function Toon_step(context) {
             if (this.sprites.length) {
                 for (var i=0; i < this.sprites.length; i++) {
-                    if (i !== this.currentSpriteNdx && this.displayList.indexOf(this.sprites[i]) !== -1) {
+                    if (i !== this.spriteNdx && this.displayList.indexOf(this.sprites[i]) !== -1) {
                         this.removeView(this.sprites[i]);        
                     }
                 }
-                this.addView(this.sprites[this.currentSpriteNdx]);
+                this.addView(this.sprites[this.spriteNdx]);
             }
-            View.prototype.draw.call(this, context);
         };
         return Toon;
     }

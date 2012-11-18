@@ -96,6 +96,7 @@ mod({
             // A badguy
             this.badguy = new MoonenMinor(32,4*32);
             this.addView(this.badguy);
+
             /** * *
             * The main player character.
             * @type {Astronaut}
@@ -111,33 +112,7 @@ mod({
             * * **/
             this.suspended = false;
         
-            var self = this;
-            document.body.onkeydown = function(e) {
-                var nextPos = self.player.position.copy(); 
-
-                switch (e.keyCode) {
-                    case 38: // up-arrow
-                    case 71: // g 
-                        nextPos.y(nextPos.y()-1);
-                    break;
-                    case 39: // right-arrow 
-                    case 70: // f
-                        nextPos.x(nextPos.x()+1);
-                    break;
-                    case 40: // down-arrow
-                    case 77: // m
-                        nextPos.y(nextPos.y()+1);
-                    break;
-                    case 37: // left-arrow
-                    case 68: // d
-                        nextPos.x(nextPos.x()-1);
-                    break;
-
-                    default:
-                        console.log('unknown keyCode:',e.keyCode);
-                }
-                self.determinePlayerPosition(nextPos);
-            };
+            
                     
         }
         Moonening.prototype = new Map(); 
@@ -206,26 +181,26 @@ mod({
                 if (this.player.x !== nextXPos) {
                     this.suspended = true;
                     if (this.player.x < nextXPos) { 
-                        this.player.toon.currentSpriteNdx = 5;
+                        this.player.toon.sprites[0].frameNdx = 5;
                     } else {
-                        this.player.toon.currentSpriteNdx = 6;
+                        this.player.toon.sprites[0].frameNdx = 6;
                     }
                     this.movePlayerTo(nextXPos, this.player.y, function moveXCallback() {
                         this.suspended = false;
-                        this.player.toon.currentSpriteNdx -= 4;
+                        this.player.toon.sprites[0].frameNdx -= 4;
                     }); 
                 }
                 var nextYPos = 32*this.player.position.y();
                 if (this.player.y !== nextYPos) {
                     this.suspended = true;
                     if (this.player.y < nextYPos) { 
-                        this.player.toon.currentSpriteNdx = 4;
+                        this.player.toon.sprites[0].frameNdx = 4;
                     } else {
-                        this.player.toon.currentSpriteNdx = 7;
+                        this.player.toon.sprites[0].frameNdx = 7;
                     }
                     this.movePlayerTo(this.player.x, nextYPos, function moveYCallback() {
                         this.suspended = false;
-                        this.player.toon.currentSpriteNdx -= 4;
+                        this.player.toon.sprites[0].frameNdx -= 4;
                     }); 
                 }
             }

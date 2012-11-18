@@ -28,30 +28,25 @@ mod({
         function MoonenMinor() {
             var self = this;
             var appearing = new Sprite(0, 0, 32, 32, 'img/tiles.png', [
-                new Rectangle(511, 511, 1, 1),
                 new Rectangle(8*32, 5*32, 32, 32),
                 new Rectangle(7*32, 5*32, 32, 32),
                 new Rectangle(6*32, 5*32, 32, 32),
             ]);
-            appearing.framesPerSecond = 4;
+            appearing.framesPerSecond = 8;
             // Make it so that once the last frame of the animation has played, it pauses...
             appearing.frameFunctions = [
-                {},
                 {},
                 {},
                 {
                     'pause' : function pauseAppearingMoonenMinor() {
                         appearing.isPlaying = false;
-                        self.toon.currentSpriteNdx = 1;
+                        self.toon.spriteNdx = 1;
+                        self.jump();
                     }
                 }
             ];
             appearing.isPlaying = false;
-            setTimeout(function() {
-                appearing.isPlaying = true;
-            }, 3000);
             this.appearing = appearing;
-            
             
             var idle = new Sprite(0, 0, 32, 32, 'img/tiles.png', [
                 new Rectangle(3*32, 5*32, 32, 32),
@@ -72,6 +67,8 @@ mod({
             ]);
             
             Character.apply(this, arguments);
+
+            this.tag = this.tag + '_MoonenMinor';
         }
 
         MoonenMinor.prototype = new Character(); 
@@ -80,7 +77,7 @@ mod({
         //  METHODS
         //-----------------------------
         MoonenMinor.prototype.jump = function MoonenMinor_jump() {
-            this.toon.currentSpriteNdx = 2;
+            this.toon.spriteNdx = 2;
         };
 
         return MoonenMinor;

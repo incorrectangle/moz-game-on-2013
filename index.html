@@ -23,13 +23,6 @@
     <body id="body">
         
         <div id="bang"></div>
-        <div style="position:absolute; background:white; padding:1em 1em; text-align:left;">
-            <b>News:</b>
-            <br />
-            <span>Badguy.</span>
-            <br />
-            <span>Walls!</span>
-        </div>
         <script type="text/javascript" charset="utf-8">
             mod.useTagInjection = true;
             mod.expansions = {
@@ -39,11 +32,15 @@
             mod({
                 name : "Main",
                 dependencies : [
+                    'moon::Editor/Level.js',
                     'bang::View/Stage.js',
                     'moon::Moonening.js',
-                    'moon::Dev/Levelator.js'
                 ],
-                init : function initMain (Stage, Moonening, Levelator) {
+                init : function initMain (LevelEditor, Stage, Moonening) {
+                    var editor = new LevelEditor();
+                    editor.init();
+                    window.editor = editor;
+
                     var stage = window.stage = new Stage(512, 512);
                     document.body.appendChild(stage.canvas);
                     
@@ -51,9 +48,7 @@
                     window.moon = moon;
                     stage.addView(moon);
 
-                    var level = new Levelator();
-                    window.level = level;
-
+                    mod.exportAll();
                     //setTimeout(function() {
                     //    outline.context.putImageData(Filters.mapBitmap(toon.context.getImageData(0,0,30,50), function thresh(pixel,imageData) {
                     //        var width = 2;

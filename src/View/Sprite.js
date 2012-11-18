@@ -10,13 +10,14 @@ mod({
     name : 'Sprite',
     dependencies : [ 
         'bang::View/View.js',
-        'bang::Geometry/Rectangle.js'
+        'bang::Geometry/Rectangle.js',
+        'bang::Utils/Animation.js'
     ],
     /** * *
     * Initializes the Sprite constructor.
     * @param {function():View}
     * * **/
-    init : function initSpriteConstructor(View, Rectangle) {
+    init : function initSpriteConstructor(View, Rectangle, Animation) {
         /** * *
         * Constructs new sprites.
         * @constructor
@@ -73,7 +74,18 @@ mod({
             * The first frame is 0.
             * @type {number}
             * * **/
-            this.currentFrameIndex = 0;
+            if (typeof this.__defineGetter__ === 'function') {
+                this._frameNdx = 0;
+                this.__defineGetter__('frameNdx', function getframeNdx() {
+                    return this._frameNdx;
+                });
+                this.__defineSetter__('frameNdx', function setframeNdx(frameNdx) {
+                    this._frameNdx = frameNdx;
+                    this.updateContextWithCurrentFrame();
+                });
+            } else {
+                this.frameNdx = 0;
+            }
             /** * *
             * The time at which the last frame was changed.
             * @type {number}
@@ -84,6 +96,21 @@ mod({
             * @type {boolean}
             * * **/
             this.isPlaying = false;
+            /** * *
+            * An animation timer for scheduling redraws.
+            * @type {Animation}
+            * * **/
+            this.timer = new Animation();
+            /** * *
+            * An object that identifies the Stage's step animation in the Stage's timer.
+            * @type {Object}
+            * * **/
+            this.stepAnimation = this.timer.requestAnimation(this.step, this);
+            /** * *
+            * Whether or not this sprite is visible.
+            * @type {boolean}
+            * * **/
+            this.isVisible = true;
         }  
 
         Sprite.prototype = new View();
@@ -111,7 +138,7 @@ mod({
         * Updates the context with the current frame.
         * * **/
         Sprite.prototype.updateContextWithCurrentFrame = function Sprite_updateContextWithCurrentFrame() {
-            var ndx = Math.floor(this.currentFrameIndex);
+            var ndx = Math.floor(this.frameNdx);
             var frame = this.frames[ndx];
             var sx = frame.left();
             var sy = frame.top();
@@ -142,33 +169,37 @@ mod({
             return frames;
         };
         /** * *
-        * Draws this view and its subviews into the given context.
-        * @param {CanvasRenderingContext2D}
-        * @override
+        * Updates the state of the animation.
         * * **/
-        Sprite.prototype.draw = function View_draw(context) {
+        Sprite.prototype.step = function Sprite_step() {
             if (this.isPlaying) {
                 var framesElapsed = this.numberOfFramesSince(this.lastFrameTimeStamp);
-                var nextFrame = framesElapsed + this.currentFrameIndex;
+                var nextFrame = framesElapsed + this.frameNdx;
                 if (nextFrame >= this.frames.length) {
                     nextFrame = nextFrame % this.frames.length;
                 }
 
-                var floorNdx = Math.floor(this.currentFrameIndex);
-                if (floorNdx !== Math.floor(nextFrame)) {
-                    this.stage.needsDisplay = true;
-                }
-                this.currentFrameIndex = nextFrame; 
+                var floorNdx = Math.floor(this.frameNdx);
+                this.frameNdx = nextFrame; 
+                
                 this.updateContextWithCurrentFrame();
                 this.lastFrameTimeStamp = Date.now();
 
-                var ndx = Math.floor(this.currentFrameIndex);
+                var ndx = Math.floor(this.frameNdx);
                 // Play the frame functions...
                 for (var funcName in this.frameFunctions[ndx]) {
                     this.frameFunctions[ndx][funcName]();            
                 }
             }
-            View.prototype.draw.call(this, context);
+        };
+        /** * *
+        * Draws the sprite into the given context.
+        * @param {CanvasRenderingContext2D} context
+        * * **/
+        Sprite.prototype.draw = function Sprite_draw(context) {
+            if (this.isVisible) {
+                View.prototype.draw.call(this, context);
+            }
         };
         return Sprite;
     }
