@@ -9,7 +9,7 @@
 mod({
     name : 'FloorMB',
     dependencies : [ 
-        'moon::GameObject.js',
+        'moon::Objects/GameObject.js',
         'moon::View/Sprite.js',
         'bang::Geometry/Rectangle.js'
     ],

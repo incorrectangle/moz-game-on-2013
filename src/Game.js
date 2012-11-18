@@ -9,7 +9,7 @@
 mod({
     name : 'Game',
     dependencies : [ 
-        'moon::GameObject.js',
+        'moon::Objects/GameObject.js',
         'moon::Events/Action.js',
         'bang::View/Stage.js'
     ],

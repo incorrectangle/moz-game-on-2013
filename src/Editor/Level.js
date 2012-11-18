@@ -10,7 +10,8 @@ mod({
     name : 'Level',
     dependencies : [ 
         'moon::Game.js',
-        'moon::GameObject.js',
+        'moon::Objects/GameObject.js',
+        'moon::Map/GameMap.js',
         'moon::Events/Action.js',
         'bang::View/View.js',
         'moon::Objects/FloorMB.js',
@@ -19,7 +20,7 @@ mod({
     /** * *
     * Initializes the Level constructor.
     * * **/
-    init : function initLevelConstructor(Game, GameObject, Action, View, FloorMB, DeleteTile) {
+    init : function initLevelConstructor(Game, GameObject, GameMap, Action, View, FloorMB, DeleteTile) {
         /** * *
         * Constructs new Levels.
         * @constructor
@@ -79,7 +80,9 @@ mod({
                     this.stage.canvas.parentNode.insertBefore(this.helpPanel, this.stage.canvas);
                 }
             }, this));
+
             // add our views...
+            this.stage.addView(this.mapPanel);
             this.stage.addView(this.objectPanel);
             this.stage.addView(this.statusBar);
             this.status = 'Select a game object with arrows. Hit / for help.';
@@ -88,7 +91,20 @@ mod({
                 self.status = self.selectionStatus;
             }, 3000);
         };
-
+        /** * *
+        * The position of the game object at the given index.
+        * @param {number} ndx
+        * @return {Object}
+        * * **/
+        Level.prototype.positionOfObjectAtNdx = function Level_positionOfObjectAtNdx(ndx) {
+            var p = {};
+            var w = this.tileWidth + this.objectPanelPadding;
+            var h = this.tileHeight + this.objectPanelPadding;
+            var c = 5;
+            p.x = ((ndx%c) * w) + this.objectPanelPadding/2;
+            p.y = (Math.floor(ndx/c) * h) + this.objectPanelPadding/2;
+            return p;
+        };
         //-----------------------------
         //  GETTERS/SETTERS
         //-----------------------------
@@ -116,6 +132,35 @@ mod({
                 this._helpPanel = helpPanel;
             }
             return this._helpPanel;
+        });
+        /** * *
+        * Gets the mapPanel property. Its creation is deferred.
+        * The map panel holds our tiles and selector.
+        * @returns {View} mapPanel 
+        * * **/
+        Level.prototype.__defineGetter__('mapPanel', function Level_getmapPanel() {
+            if (!this._mapPanel) {
+                var panel = new View(0,0,512,512);
+                panel.addView(this.mapSelector);
+                this._mapPanel = panel;
+            }
+            return this._mapPanel;
+        });
+        /** * *
+        * Gets the mapSelector property. Its creation is deferred.
+        * The view for the spot on the map the user is editing.
+        * @returns {View} mapSelector 
+        * * **/
+        Level.prototype.__defineGetter__('mapSelector', function Level_getmapSelector() {
+            if (!this._mapSelector) {
+                var selector = new View(0,0,this.tileWidth,this.tileHeight);
+                selector.context.fillStyle = 'rgba(255,255,255,0.3)';
+                selector.context.strokeStyle = 'green';
+                selector.context.fillRect(0,0,this.tileWidth,this.tileHeight);
+                selector.context.strokeRect(0,0,this.tileWidth,this.tileHeight);
+                this._mapSelector = selector;
+            }
+            return this._mapSelector;
         });
         /** * *
         * Gets the selectionNdx property.
@@ -194,16 +239,14 @@ mod({
         * * **/
         Level.prototype.__defineGetter__('objectsContainer', function Level_getobjectsContainer() {
             if (!this._objectsContainer) {
-                var objectsContainer = new View(10,30);
+                var objectsContainer = new View(10,10);
                 // Add things to it...
                 objectsContainer.addView(this.objectSelector);
-                var w = this.tileWidth + this.objectPanelPadding;
-                var h = this.tileHeight + this.objectPanelPadding;
-                var c = 5;
                 for (var i=0; i < this.objects.length; i++) {
                     var obj = this.objects[i];
-                    obj.view.x = ((i%c) * w) + this.objectPanelPadding/2;
-                    obj.view.y = (Math.floor(i/c) * h) + this.objectPanelPadding/2;
+                    var p = this.positionOfObjectAtNdx(i);
+                    obj.view.x = p.x; 
+                    obj.view.y = p.y; 
                     objectsContainer.addView(obj.view);
                 }
                 this._objectsContainer = objectsContainer;
@@ -217,7 +260,7 @@ mod({
         * * **/
         Level.prototype.__defineGetter__('statusBar', function Level_getstatusBar() {
             if (!this._statusBar) {
-                var bar = new View(0,0,512,20);
+                var bar = new View(0,512-20,512,20);
                 this._statusBar = bar;
             }
             return this._statusBar;
@@ -243,7 +286,8 @@ mod({
         * @param {String} 
         * * **/
         Level.prototype.__defineSetter__('status', function Level_setstatus(status) {
-            this.statusBar.context.fillStyle = 'rgb(88,88,88)';
+            this.statusBar.context.clearRect(0,0,512,20);
+            this.statusBar.context.fillStyle = 'rgba(153,153,153,0.4)';
             this.statusBar.context.fillRect(0,0,512,20);
             this.statusBar.context.fillStyle = 'white';
             this.statusBar.context.textBaseline = 'top';
