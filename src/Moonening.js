@@ -29,62 +29,7 @@ mod({
         * @return {Moonening}
         * * **/ 
         function Moonening() {
-            var tileMap = [
-                // tile indices...
-                2, 2, 2, 2, 2, 2, 2, 3, 4, 5, 2, 2, 2, 2, 2, 7, 
-                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 8, 
-                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 8, 
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 
-                2, 2, 2, 2, 2, 2, 7, 0, 0, 0, 0, 0, 0, 0, 0, 8, 
-                1, 1, 1, 1, 1, 1, 8, 0, 0, 0, 0, 0, 0, 0, 0, 8, 
-                1, 1, 1, 1, 1, 1, 8, 0, 0, 0, 0, 0, 0, 0, 0, 8, 
-                0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 8, 
-                0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 8, 
-                0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 8, 
-                2, 2, 2, 2, 2, 2, 6, 0, 0, 0, 0, 0, 0, 0, 0, 8, 
-                1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 8, 
-                1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 8, 
-            ];
-            var dataMap = tileMap.map(function mapTileIndicesToData(ndx) {
-                var data = new MapData();
-                switch (ndx) {
-                    case 0: // A floor tile...
-                        data.isWall = false;
-                    break;
-
-                    case 1: // A clear tile, which we use for walls...
-                    case 2: // A wall...
-                    case 3: // A wall...
-                    case 4: // A door...
-                    case 5: // A wall...
-                    case 6: // A wall...
-                    case 7: // A wall...
-                    case 8: // A wall...
-                        data.isWall = true;
-                    break;
-
-                    default:
-                        data.isWall = false; 
-                }
-                return data;
-            });
-            Map.call(this, 0, 0, 512, 512, 'img/tiles.png', [
-                // tile frames... 
-                new Rectangle(0,0,32,32), // 0 - floor
-                new Rectangle(511,511,1,1), // 1 - clear
-                new Rectangle(32,0,32,96), // 2 - wall repeat x
-                new Rectangle(64,0,32,96), // 3 - wall -> door
-                new Rectangle(96,0,32,96), // 4 - door
-                new Rectangle(128,0,32,96), // 5 - door -> wall 
-                new Rectangle(160,0,32,96), // 6 - wall end (if going vert)
-                new Rectangle(192,0,32,32), // 7 - wall (top vert)
-                new Rectangle(192,32,32,32), // 8 - wall vert repeating
-            ], 16 /* map width */, 16 /* map height */, tileMap, dataMap);
-
-            /** * *
+                        /** * *
             * The map selector.
             * @type {View}
             * * **/
@@ -111,9 +56,6 @@ mod({
             * @type {Boolean}
             * * **/
             this.suspended = false;
-        
-            
-                    
         }
         Moonening.prototype = new Map(); 
         Moonening.prototype.constructor = Moonening;

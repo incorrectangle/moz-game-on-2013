@@ -73,6 +73,9 @@ mod({
             this.addKeyDownAction(80/* p */, new Action(function togglePanel() {
                 this.objectPanel.alpha = !this.objectPanel.alpha;
             }, this));
+            this.addKeyDownAction(13/* enter */, new Action(function drawObject() {
+
+            }, this));
             this.addKeyDownAction(191 /* / */, new Action(function toggleHelp() {
                 if (this.stage.canvas.parentNode.contains(this.helpPanel)) {
                     this.stage.canvas.parentNode.removeChild(this.helpPanel);
@@ -108,6 +111,17 @@ mod({
         //-----------------------------
         //  GETTERS/SETTERS
         //-----------------------------
+        /** * *
+        * Gets the gameMap property. Its creation is deferred.
+        * 
+        * @returns {GameMap} gameMap 
+        * * **/
+        Level.prototype.__defineGetter__('gameMap', function Level_getgameMap() {
+            if (!this._gameMap) {
+                this._gameMap = new GameMap(16,16);
+            }
+            return this._gameMap;
+        });
         /** * *
         * Gets the helpPanel property.
         * 

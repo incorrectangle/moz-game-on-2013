@@ -1,6 +1,7 @@
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 * GameMap.js
-* The main game map.
+* The main game map. Is a 2d list of GameUnits.
+*
 * Copyright (c) 12 Schell Scivally. All rights reserved.
 * 
 * @author   Schell Scivally 

@@ -54,11 +54,6 @@ mod({
             * * **/
             this.tileMap = tileMap || this.tileMap || [];        
             /** * *
-            * The user data map.
-            * @type {Array.<number>}
-            * * **/
-            this.dataMap = dataMap || this.dataMap || [];
-            /** * *
             * The amount scrolled in x.
             * @type {number}
             * * **/

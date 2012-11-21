@@ -34,20 +34,28 @@
                 dependencies : [
                     'moon::Editor/Level.js',
                     'bang::View/Stage.js',
-                    'moon::Moonening.js',
+                    'moon::View/MapView.js'
                 ],
-                init : function initMain (LevelEditor, Stage, Moonening) {
+                init : function initMain (LevelEditor, Stage, MapView) {
                     var editor = new LevelEditor();
                     editor.init();
                     window.editor = editor;
 
                     var stage = window.stage = new Stage(512, 512);
                     document.body.appendChild(stage.canvas);
-                    
-                    var moon = new Moonening();
-                    window.moon = moon;
-                    stage.addView(moon);
 
+                    var mapView = window.mapView = new MapView(0,0,512,512);
+                    mapView.tilesX = 32;
+                    mapView.tilesY = 32;
+                    stage.addView(mapView);  
+                    var img = new Image();
+                    img.addEventListener('load', function() {
+                        var floor = new View(0,0,32,32);
+                        floor.context.drawImage(img,0,0,32,32,0,0,32,32);
+                        mapView.addTile(floor);
+                    });
+                    img.src = 'img/tiles.png';
+                    
                     mod.exportAll();
                     //setTimeout(function() {
                     //    outline.context.putImageData(Filters.mapBitmap(toon.context.getImageData(0,0,30,50), function thresh(pixel,imageData) {
