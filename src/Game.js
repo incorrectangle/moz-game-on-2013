@@ -23,12 +23,14 @@ mod({
         * @nosideeffects
         * @return {Game}
         * * **/ 
-        function Game() {
+        function Game(w,h) {
+            w = w || 512;
+            h = h || 512;
             /** * *
             * The game's stage.
             * @type {Stage}
             * * **/
-            this.stage = new Stage(512,512);
+            this.stage = new Stage(w,h);
             /** * *
             * A layering of game object maps.
             * @type {Array.<Array.<GameObject>>}
@@ -36,9 +38,14 @@ mod({
             this.objectMaps = this.objectMaps || [];
             /** * *
             * Key down actions.
-            * @type {Array.<Array.<function>>}
+            * @type {Array.<Array.<Action>>}
             * * **/
             this.keyDownActions = [];
+            /** * *
+            * Mouse actions.
+            * @type {Array.<Array.<Action>>}
+            * * **/
+            this.mouseActions = [];
         }
 
         Game.prototype = {}; 
@@ -53,15 +60,37 @@ mod({
             document.body.appendChild(this.stage.canvas);
 
             var self = this;
+            window.onresize = function windowResize() {
+                var w = window.innerWidth;
+                var h = window.innerHeight - 5;
+                self.stage.canvas.width = w; 
+                self.stage.canvas.height = h;
+                self.stage.width = w; 
+                self.stage.height = h; 
+                self.stage.needsDisplay = true;
+            };
             document.body.addEventListener('keydown', function(e) {
                 console.log(e.keyCode);
                 var actions = self.keyDownActions[e.keyCode];
                 if (actions) {
                     for (var i=0; i < actions.length; i++) {
-                        var action = actions[i].respond();
+                        var action = actions[i].respond(e);
                     }
                 }
             });
+            function makeMouseResponder(eventName) {
+                return function(e) {
+                    var actions = self.mouseActions[eventName];
+                    if (actions) {
+                        for (var i=0; i < actions.length; i++) {
+                            var action = actions[i].respond(e);
+                        } 
+                    }
+                }
+            }
+            this.stage.canvas.addEventListener('mousedown', makeMouseResponder('mousedown'));
+            this.stage.canvas.addEventListener('mousemove', makeMouseResponder('mousemove'));
+            this.stage.canvas.addEventListener('mouseup', makeMouseResponder('mouseup'));
         };
         /** * *
         * Adds an action to the keydown actions.
@@ -73,6 +102,18 @@ mod({
                 this.keyDownActions[keyCode].push(action);
             } else {
                 this.keyDownActions[keyCode] = [action];
+            }
+        };
+        /** * *
+        * Adds an action to a mouse event.
+        * @param {String} eventName
+        * @param {Action} action
+        * * **/
+        Game.prototype.addMouseAction = function Game_addMouseAction(eventName, action) {
+            if (typeof this.mouseActions[eventName] === 'object') {
+                this.mouseActions[eventName].push(action);
+            } else {
+                this.mouseActions[eventName] = [action];
             }
         };
         /** * *

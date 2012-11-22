@@ -44,7 +44,7 @@ mod({
         * Executes the response as the actor.
         * * **/
         Action.prototype.respond = function Action_respond() {
-            this.response.call(this.actor);
+            this.response.apply(this.actor, arguments);
         };
 
         return Action;

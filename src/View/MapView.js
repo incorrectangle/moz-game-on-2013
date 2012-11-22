@@ -69,7 +69,7 @@ mod({
         * @param {number} x The x location in the map to place the tile.
         * @param {number} y The y location in the map to place the tile.
         * * **/
-        MapView.prototype.placeTileNdx = function MapView_placeTileNdx(ndx, x, y) {
+        MapView.prototype.placeTileNdxAt = function MapView_placeTileNdxAt(ndx, x, y) {
             this.tileNdx[y*this.tilesX + x] = ndx;    
             this.needsDisplay = true;
         };

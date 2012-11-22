@@ -14,13 +14,16 @@ mod({
         'moon::Map/GameMap.js',
         'moon::Events/Action.js',
         'bang::View/View.js',
-        'moon::Objects/FloorMB.js',
-        'moon::Objects/DeleteTile.js'
+        'moon::Objects/MapPiece.js',
+        'bang::Geometry/Rectangle.js',
+        'moon::View/MapView.js',
+        'bang::View/Stage.js',
+        'bang::Geometry/Vector.js'
     ],
     /** * *
     * Initializes the Level constructor.
     * * **/
-    init : function initLevelConstructor(Game, GameObject, GameMap, Action, View, FloorMB, DeleteTile) {
+    init : function initLevelConstructor(Game, GameObject, GameMap, Action, View, MapPiece, Rectangle, MapView, Stage, Vector) {
         /** * *
         * Constructs new Levels.
         * @constructor
@@ -28,8 +31,7 @@ mod({
         * @return {Level}
         * * **/ 
         function Level() {
-           Game.call(this); 
-
+           Game.call(this,1024,512); 
            /** * *
            * The tile width.
            * @type {number}
@@ -45,6 +47,11 @@ mod({
            * @type {number}
            * * **/
            this.objectPanelPadding = 4;
+           /** * *
+           * The number of objects layed out horizontally.
+           * @type {number}
+           * * **/
+           this.objectColumns = 13;
         }
 
         Level.prototype = new Game(); 
@@ -62,31 +69,61 @@ mod({
                 this.selectionNdx--;
             }, this));
             this.addKeyDownAction(38/* UP */, new Action(function selectUp() {
-                this.selectionNdx += 5;
+                this.selectionNdx -= this.objectColumns;
             }, this));
             this.addKeyDownAction(39/* RIGHT */, new Action(function selectRight() {
                 this.selectionNdx++;
             }, this));
             this.addKeyDownAction(40/* DOWN */, new Action(function selectDown() {
-                this.selectionNdx -= 5;
-            }, this));
-            this.addKeyDownAction(80/* p */, new Action(function togglePanel() {
-                this.objectPanel.alpha = !this.objectPanel.alpha;
+                this.selectionNdx += this.objectColumns;
             }, this));
             this.addKeyDownAction(13/* enter */, new Action(function drawObject() {
-
+                
             }, this));
             this.addKeyDownAction(191 /* / */, new Action(function toggleHelp() {
-                if (this.stage.canvas.parentNode.contains(this.helpPanel)) {
-                    this.stage.canvas.parentNode.removeChild(this.helpPanel);
+                if (this.objectStage.canvas.parentNode.contains(this.helpPanel)) {
+                    this.objectStage.canvas.parentNode.removeChild(this.helpPanel);
                 } else {
-                    this.stage.canvas.parentNode.insertBefore(this.helpPanel, this.stage.canvas);
+                    this.objectStage.canvas.parentNode.insertBefore(this.helpPanel, this.objectStage.canvas);
                 }
             }, this));
 
+            var mouseIsDown = false;
+
+            // Add our mouse hooks...
+            this.addMouseAction('mousedown', new Action(function mouseDown(e) {
+                if (e.offsetX > 512) {
+                    // The mousedown happened in the map...
+                    mouseIsDown = true;
+                }
+
+            },this));
+            this.addMouseAction('mousemove', new Action(function mouseMove(e) {
+                if (mouseIsDown && e.offsetX > 512) {
+                    // Put down a tile!
+                    this.putDownTileAt(e.offsetX,e.offsetY);
+                }
+            }, this));
+            this.addMouseAction('mouseup', new Action(function mouseUp(e) {
+                if (mouseIsDown && e.offsetX > 512) {
+                    // Put down a tile!
+                    this.putDownTileAt(e.offsetX,e.offsetY);
+                } else {
+                    // The mousedown happened in the object panel...
+                    for (var i=0; i < this.objects.length; i++) {
+                        var view = this.objects[i].view;
+                        if (view.vectorToGlobal(view.localBoundary()).containsPoint(new Vector(e.offsetX,e.offsetY))) {
+                            this.selectionNdx = i;
+                            break;
+                        }
+                    }
+                }
+                mouseIsDown = false;
+            },this));
+
             // add our views...
-            this.stage.addView(this.mapPanel);
             this.stage.addView(this.objectPanel);
+            this.stage.addView(this.mapView);
             this.stage.addView(this.statusBar);
             this.status = 'Select a game object with arrows. Hit / for help.';
             var self = this;
@@ -103,16 +140,40 @@ mod({
             var p = {};
             var w = this.tileWidth + this.objectPanelPadding;
             var h = this.tileHeight + this.objectPanelPadding;
-            var c = 5;
+            var c = this.objectColumns;
             p.x = ((ndx%c) * w) + this.objectPanelPadding/2;
             p.y = (Math.floor(ndx/c) * h) + this.objectPanelPadding/2;
             return p;
+        };
+        /** * *
+        * Finds the map index that corresponds to the given point.
+        * @param {number} x
+        * @param {number} y
+        * @return {number}
+        * * **/
+        Level.prototype.determineMapNdxFromPoint = function Level_determineMapNdxFromPoint(x, y) {
+            var mapX = x - this.mapView.x;
+            var mapY = y - this.mapView.y;
+            var xsIn = Math.floor(mapX/this.mapView.tileWidth);
+            var ysIn = Math.floor(mapY/this.mapView.tileHeight);
+            var ndx = this.mapView.tilesX*ysIn + xsIn;
+            return ndx;
+        };
+        /** * *
+        * Deposits a tile at the spot on the map.
+        * @param {number} x
+        * @param {number} y
+        * * **/
+        Level.prototype.putDownTileAt = function Level_putDownTileAt(x, y) {
+            var destNdx = this.determineMapNdxFromPoint(x,y);
+            this.mapView.tileNdx[destNdx] = this.selectionNdx;
+            this.stage.needsDisplay = true;
         };
         //-----------------------------
         //  GETTERS/SETTERS
         //-----------------------------
         /** * *
-        * Gets the gameMap property. Its creation is deferred.
+        * Gets the gameMap property.
         * 
         * @returns {GameMap} gameMap 
         * * **/
@@ -148,17 +209,15 @@ mod({
             return this._helpPanel;
         });
         /** * *
-        * Gets the mapPanel property. Its creation is deferred.
-        * The map panel holds our tiles and selector.
-        * @returns {View} mapPanel 
+        * Gets the mapView property.
+        * 
+        * @returns {MapView} mapView 
         * * **/
-        Level.prototype.__defineGetter__('mapPanel', function Level_getmapPanel() {
-            if (!this._mapPanel) {
-                var panel = new View(0,0,512,512);
-                panel.addView(this.mapSelector);
-                this._mapPanel = panel;
+        Level.prototype.__defineGetter__('mapView', function Level_getmapView() {
+            if (!this._mapView) {
+                this._mapView = new MapView(512,0,512,512);
             }
-            return this._mapPanel;
+            return this._mapView;
         });
         /** * *
         * Gets the mapSelector property. Its creation is deferred.
@@ -193,12 +252,10 @@ mod({
         * @param {number} 
         * * **/
         Level.prototype.__defineSetter__('selectionNdx', function Level_setselectionNdx(selectionNdx) {
-            if (selectionNdx >= 0 && selectionNdx < this.objects.length) {
-                this._selectionNdx = selectionNdx;
+                this._selectionNdx = selectionNdx < 0 ? this.objects.length-1 : selectionNdx%this.objects.length;
                 this.status = this.selectionStatus;
                 this.objectSelector.x = this.selection.view.x - this.objectPanelPadding/2;
                 this.objectSelector.y = this.selection.view.y - this.objectPanelPadding/2;
-            }
         });
         /** * *
         * Gets the selectionStatus property. 
@@ -224,9 +281,29 @@ mod({
         Level.prototype.__defineGetter__('objects', function Level_getobjects() {
             if (!this._objects) {
                 this._objects = [
-                    new DeleteTile(),
-                    new FloorMB()
+                    new MapPiece('Floor', ' - A floor tile', 'img/tiles.png', new Rectangle(0,0,32,32)),
+                    new MapPiece('Wall (Top)', ' - A top wall tile', 'img/tiles.png', new Rectangle(32,0,32,32)),
+                    new MapPiece('Wall (Middle)', ' - A middle wall tile', 'img/tiles.png', new Rectangle(32,32,32,32)),
+                    new MapPiece('Wall (Bottom)', ' - A bottom wall tile', 'img/tiles.png', new Rectangle(32,64,32,32)),
+                    new MapPiece('Wall to Door (Top)', ' - A top wall to door tile', 'img/tiles.png', new Rectangle(64,0,32,32)),
+                    new MapPiece('Wall to Door (Middle)', ' - A middle wall to door tile', 'img/tiles.png', new Rectangle(64,32,32,32)),
+                    new MapPiece('Wall to Door (Bottom)', ' - A bottom wall to door tile', 'img/tiles.png', new Rectangle(64,64,32,32)),
+                    new MapPiece('Door (Top)', ' - A top door tile', 'img/tiles.png', new Rectangle(96,0,32,32)),
+                    new MapPiece('Door (Middle)', ' - A middle door tile', 'img/tiles.png', new Rectangle(96,32,32,32)),
+                    new MapPiece('Door (Bottom)', ' - A bottom door tile', 'img/tiles.png', new Rectangle(96,64,32,32)),
+                    new MapPiece('Door to Wall (Top)', ' - A top door to wall tile', 'img/tiles.png', new Rectangle(128,0,32,32)),
+                    new MapPiece('Door to Wall (Middle)', ' - A middle door to wall tile', 'img/tiles.png', new Rectangle(128,32,32,32)),
+                    new MapPiece('Door to Wall (Bottom)', ' - A bottom door to wall tile', 'img/tiles.png', new Rectangle(128,64,32,32)),
+                    new MapPiece('Vertical Wall (Top)', ' - A top vertical wall tile', 'img/tiles.png', new Rectangle(160,0,32,32)),
+                    new MapPiece('Vertical Wall (Middle)', ' - A middle vertical wall tile', 'img/tiles.png', new Rectangle(160,32,32,32)),
+                    new MapPiece('Vertical Wall (Bottom)', ' - A bottom vertical wall tile', 'img/tiles.png', new Rectangle(160,64,32,32)),
+                    new MapPiece('Vertical Wall Repeating (Top)', ' - A cap to a repeating vertical wall tile', 'img/tiles.png', new Rectangle(192,0,32,32)),
+                    new MapPiece('Vertical Wall Repeating', ' - A repeating vertical wall tile', 'img/tiles.png', new Rectangle(192,32,32,32)),
                 ];
+                var mv = this.mapView;
+                this._objects.map(function(el) {
+                    mv.addTile(el.view);
+                });
             }
             return this._objects;
         });
@@ -274,7 +351,7 @@ mod({
         * * **/
         Level.prototype.__defineGetter__('statusBar', function Level_getstatusBar() {
             if (!this._statusBar) {
-                var bar = new View(0,512-20,512,20);
+                var bar = new View(0,512-20,1024,20);
                 this._statusBar = bar;
             }
             return this._statusBar;
@@ -300,9 +377,9 @@ mod({
         * @param {String} 
         * * **/
         Level.prototype.__defineSetter__('status', function Level_setstatus(status) {
-            this.statusBar.context.clearRect(0,0,512,20);
+            this.statusBar.context.clearRect(0,0,1024,20);
             this.statusBar.context.fillStyle = 'rgba(153,153,153,0.4)';
-            this.statusBar.context.fillRect(0,0,512,20);
+            this.statusBar.context.fillRect(0,0,1024,20);
             this.statusBar.context.fillStyle = 'white';
             this.statusBar.context.textBaseline = 'top';
             this.statusBar.context.font = 'Bold 12px sans-serif';
