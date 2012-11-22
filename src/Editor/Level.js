@@ -78,6 +78,7 @@ mod({
                 this.selectionNdx += this.objectColumns;
             }, this));
             this.addKeyDownAction(13/* enter */, new Action(function drawObject() {
+                // Copy JSON level to clipboard...
                 
             }, this));
             this.addKeyDownAction(191 /* / */, new Action(function toggleHelp() {
@@ -91,6 +92,9 @@ mod({
             var mouseIsDown = false;
 
             // Add our mouse hooks...
+            this.addMouseAction('mouseout', new Action(function mouseOut(e) {
+                    mouseIsDown = false;
+            },this));
             this.addMouseAction('mousedown', new Action(function mouseDown(e) {
                 if (e.offsetX > 512) {
                     // The mousedown happened in the map...
@@ -130,6 +134,13 @@ mod({
             setTimeout(function updateStatus() {
                 self.status = self.selectionStatus;
             }, 3000);
+        };
+        /** * *
+        * Serializes the level.
+        * @return {String}
+        * * **/
+        Level.prototype.toJSON = function Level_toJSON() {
+            
         };
         /** * *
         * The position of the game object at the given index.

@@ -44,6 +44,21 @@ mod({
         //  METHODS
         //-----------------------------
         /** * *
+        * The toJSON serializer.
+        * @return {String}
+        * * **/
+        MapPiece.prototype.toJSON = function MapPiece_toJSON() {
+            return [
+                '{',
+                '   "constructor" : "MapPiece",',
+                '   "name : "'+this.name+'",',
+                '   "description" : "'+this.description+'",',
+                '   "src" : "'+this.src+'",',
+                '   "frame" : ['+[this.frame.x(),this.frame.y(),this.frame.width(),this.frame.height()]+'],',
+                '}'
+            ].join(''); 
+        };
+        /** * *
         * Gets the view property. Its creation is deferred.
         * 
         * @returns {View} view 

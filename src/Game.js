@@ -91,6 +91,8 @@ mod({
             this.stage.canvas.addEventListener('mousedown', makeMouseResponder('mousedown'));
             this.stage.canvas.addEventListener('mousemove', makeMouseResponder('mousemove'));
             this.stage.canvas.addEventListener('mouseup', makeMouseResponder('mouseup'));
+            this.stage.canvas.addEventListener('mouseover', makeMouseResponder('mouseover'));
+            this.stage.canvas.addEventListener('mouseout', makeMouseResponder('mouseout'));
         };
         /** * *
         * Adds an action to the keydown actions.
