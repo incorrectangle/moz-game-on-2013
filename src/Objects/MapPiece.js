@@ -27,6 +27,7 @@ mod({
             GameObject.call(this);
             this.name = name || 'MapPiece';                
             this.description = description || ' - A map tile.';
+            this.tier = 0;
             /** * *
             * The source of the image to take the tile from.
             * @type {String}
@@ -48,16 +49,25 @@ mod({
         * @return {String}
         * * **/
         MapPiece.prototype.toJSON = function MapPiece_toJSON() {
-            return [
-                '{',
-                '   "constructor" : "MapPiece",',
-                '   "name : "'+this.name+'",',
-                '   "description" : "'+this.description+'",',
-                '   "src" : "'+this.src+'",',
-                '   "frame" : ['+[this.frame.x(),this.frame.y(),this.frame.width(),this.frame.height()]+'],',
-                '}'
-            ].join(''); 
+            return JSON.stringify(this.JSONObject);
         };
+        //-----------------------------
+        //  GETTERS/SETTERS
+        //-----------------------------
+        /** * *
+        * Gets the JSONObject property.
+        * The JSON representation of this object.
+        * @returns {Object} JSONObject 
+        * * **/
+        MapPiece.prototype.__defineGetter__('JSONObject', function MapPiece_getJSONObject() {
+            return {
+                constructor : 'MapPiece',
+                name : this.name,
+                description : this.description,
+                src : this.src,
+                frame : [this.frame.x(),this.frame.y(),this.frame.width(),this.frame.height()]
+            };
+        });
         /** * *
         * Gets the view property. Its creation is deferred.
         * 

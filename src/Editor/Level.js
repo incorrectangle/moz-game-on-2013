@@ -82,10 +82,10 @@ mod({
                 
             }, this));
             this.addKeyDownAction(191 /* / */, new Action(function toggleHelp() {
-                if (this.objectStage.canvas.parentNode.contains(this.helpPanel)) {
-                    this.objectStage.canvas.parentNode.removeChild(this.helpPanel);
+                if (this.stage.canvas.parentNode.contains(this.helpPanel)) {
+                    this.stage.canvas.parentNode.removeChild(this.helpPanel);
                 } else {
-                    this.objectStage.canvas.parentNode.insertBefore(this.helpPanel, this.objectStage.canvas);
+                    this.stage.canvas.parentNode.insertBefore(this.helpPanel, this.stage.canvas);
                 }
             }, this));
 
@@ -134,13 +134,18 @@ mod({
             setTimeout(function updateStatus() {
                 self.status = self.selectionStatus;
             }, 3000);
+
+            // Run through our map and put down default tiles...
+            for (var i=0; i < this.gameMap.mapUnits.length; i++) {
+                this.updateMapNdxWithObjectAtNdx(i, 0);
+            }
         };
         /** * *
         * Serializes the level.
         * @return {String}
         * * **/
         Level.prototype.toJSON = function Level_toJSON() {
-            
+           return JSON.stringify(this.JSONObject);
         };
         /** * *
         * The position of the game object at the given index.
@@ -152,8 +157,8 @@ mod({
             var w = this.tileWidth + this.objectPanelPadding;
             var h = this.tileHeight + this.objectPanelPadding;
             var c = this.objectColumns;
-            p.x = ((ndx%c) * w) + this.objectPanelPadding/2;
-            p.y = (Math.floor(ndx/c) * h) + this.objectPanelPadding/2;
+            p.x = 10 + ((ndx%c) * w) + this.objectPanelPadding/2;
+            p.y = 10 + (Math.floor(ndx/c) * h) + this.objectPanelPadding/2;
             return p;
         };
         /** * *
@@ -177,12 +182,98 @@ mod({
         * * **/
         Level.prototype.putDownTileAt = function Level_putDownTileAt(x, y) {
             var destNdx = this.determineMapNdxFromPoint(x,y);
-            this.mapView.tileNdx[destNdx] = this.selectionNdx;
+            var selectedNdx = this.selectionNdx;
+            this.updateMapNdxWithObjectAtNdx(destNdx, selectedNdx);
+        };
+        /** * *
+        * Add an object at the given index.
+        * @param {GameObject} obj
+        * @param {number} ndx
+        * * **/
+        Level.prototype.updateMapNdxWithObjectAtNdx = function Level_updateMapNdxWithObjectAtNdx(mapNdx,selectedNdx) {
+            this.mapView.tileNdx[mapNdx] = selectedNdx;
+
+            var obj = this.objects[selectedNdx];
+            this.gameMap.addObjectAtNdx(obj, mapNdx);
             this.stage.needsDisplay = true;
+        };
+        /** * *
+        * Prints the level to the JS console.
+        * * **/
+        Level.prototype.print = function Level_print() {
+            document.getElementById('output').innerText = JSON.stringify(this.JSONObject);
+        };
+        /** * *
+        * Loads a level from the input textarea.
+        * * **/
+        Level.prototype.load = function Level_load() {
+            var json = document.getElementById('input').value;
+            var object = JSON.parse(json);
+            console.log(object);
+            this.fromJSONObject(object);
+        };
+        /** * *
+        * Loads a level from a JSON object.
+        * @param {Object}
+        * * **/
+        Level.prototype.fromJSONObject = function Level_fromJSONObject(obj) {
+            // Remove these views and force them to reload...
+            this.objectPanel.parent.removeView(this.objectPanel);
+            this.mapView.parent.removeView(this.mapView);
+            this._objectPanel = false;
+            this._mapView = false;
+            this._gameMap = false;
+
+            this.objects.splice(0,this.objects.length);
+            for (var i=0; i < obj.objects.length; i++) {
+                var object = obj.objects[i];
+                var r = new Rectangle();
+                Rectangle.apply(r, object.frame);
+                var addition = new MapPiece(object.name,object.description,object.src,r);
+                this.objects.push(addition);
+                this.mapView.addTile(addition.view);    
+            }
+            
+            this.stage.addView(this.objectPanel);
+            this.stage.addView(this.mapView);
+            // Now populate them with the new level's values...
+            for (var i=0; i < obj.map.length; i++) {
+                var config = obj.map[i];
+                if (config.floor !== -1) {
+                    this.updateMapNdxWithObjectAtNdx(i, config.floor);
+                }
+                if (config.actor !== -1) {
+                    this.updateMapNdxWithObjectAtNdx(i, config.actor);
+                }
+                if (config.ceiling !== -1) {
+                    this.updateMapNdxWithObjectAtNdx(i, config.ceil);
+                }
+            }
         };
         //-----------------------------
         //  GETTERS/SETTERS
         //-----------------------------
+        /** * *
+        * Gets the JSONObject property.
+        * The JSON representation of this object.
+        * @returns {Object} JSONObject 
+        * * **/
+        Level.prototype.__defineGetter__('JSONObject', function Level_getJSONObject() {
+            var self = this;
+            return {
+                constructor : 'Level',
+                objects : this.objects.map(function(el) {
+                    return el.JSONObject;
+                }),
+                map : this.gameMap.mapUnits.map(function(el) {
+                    return {
+                        floor : self.objects.indexOf(el.floor),
+                        actor : self.objects.indexOf(el.actor),
+                        ceiling : self.objects.indexOf(el.ceiling)
+                    };
+                })
+            };
+        });
         /** * *
         * Gets the gameMap property.
         * 
@@ -203,10 +294,28 @@ mod({
             if (!this._helpPanel) {
                 var helpPanel = document.createElement('div');
                 helpPanel.id = 'helpPanel';
-                helpPanel.innerHTML = '<fieldset><legend>Help</legend><ul>' + [
-                    '<li>/ - toggle help</li>',
-                    '<li>p - toggle game object panel</li>',
-                ].join('') + '</ul></fieldset>';
+                helpPanel.innerHTML = [
+                    '<fieldset>',
+                    '<legend>Help & Options</legend>',
+                    '<p><b>Use the mouse or arrows to select an object, then use the mouse to place the object on the map.</b></p>',
+                    '<a href="#" onclick="editor.print()">Output (print) the current level</a> - reads to output below<br />',
+                    '<a href="#" onclick="editor.load()">Input (load) a level into the editor</a> - reads from input below<br />',
+                    '<a href="#" onclick="editor.reset()">Reset the editor</a><br />',
+                    '<p>&nbsp;</p>',
+                    '<fieldset>',
+                    '<legend>Hotkeys</legend>',
+                    '<p>/ - toggle help</p>',
+                    '</fieldset>',
+                    '</fieldset>',
+                    '<fieldset>',
+                    '<legend>Input & Output</legend>',
+                    '<legend>Input</legend>',
+                    '<textarea id="input" rows="10" style="width:100%;">',
+                    '</textarea>',
+                    '<legend>Output</legend>',
+                    '<textarea id="output" rows="10" style="width:100%;" onclick="this.focus();this.select()">',
+                    '</textarea>',
+                ].join('');
                 helpPanel.style.cssText = [
                     'text-align:left;',
                     'position:absolute;',
@@ -342,15 +451,7 @@ mod({
         Level.prototype.__defineGetter__('objectsContainer', function Level_getobjectsContainer() {
             if (!this._objectsContainer) {
                 var objectsContainer = new View(10,10);
-                // Add things to it...
-                objectsContainer.addView(this.objectSelector);
-                for (var i=0; i < this.objects.length; i++) {
-                    var obj = this.objects[i];
-                    var p = this.positionOfObjectAtNdx(i);
-                    obj.view.x = p.x; 
-                    obj.view.y = p.y; 
-                    objectsContainer.addView(obj.view);
-                }
+                
                 this._objectsContainer = objectsContainer;
             }
                 return this._objectsContainer;
@@ -377,7 +478,14 @@ mod({
                 panel.context.fillStyle = 'rgb(48,48,48)';
                 panel.context.fillRect(0,0,512,512);
                 // Add things to it...
-                panel.addView(this.objectsContainer);
+                panel.addView(this.objectSelector);
+                for (var i=0; i < this.objects.length; i++) {
+                    var obj = this.objects[i];
+                    var p = this.positionOfObjectAtNdx(i);
+                    obj.view.x = p.x; 
+                    obj.view.y = p.y; 
+                    panel.addView(obj.view);
+                }
                 this._objectPanel = panel;
             }
             return this._objectPanel;

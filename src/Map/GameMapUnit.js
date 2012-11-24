@@ -30,19 +30,6 @@ mod({
         //  METHODS
         //-----------------------------
         /** * *
-        * Serializes this unit.
-        * @return {String}
-        * * **/
-        GameMapUnit.prototype.toJSON = function GameMapUnit_toJSON() {
-            return [
-                '{ "GameMapUnit" : {',
-                '   "floor" : ' + this.floor.toJSON() + ',',
-                '   "actor" : ' + this.actor.toJSON() + ',',
-                '   "ceiling" : ' + this.actor.toJSON() + ',',
-                '}}'
-            ].join('');
-        };
-        /** * *
         * De-serializes this unit.
         * @return {GameMapUnit}
         * * **/
@@ -53,6 +40,19 @@ mod({
         //-----------------------------
         //  GETTERS/SETTERS
         //-----------------------------
+        /** * *
+        * Gets the JSONObject property.
+        * The JSON representation of this object.
+        * @returns {Object} JSONObject 
+        * * **/
+        GameMapUnit.prototype.__defineGetter__('JSONObject', function GameMapUnit_getJSONObject() {
+            return {
+                constructor : 'GameMapUnit',
+                floor : this.floor.JSONObject,
+                actor : this.actor.JSONObject,
+                ceiling : this.ceiling.JSONObject
+            };
+        });
         /** * *
         * Gets the floor property. Its creation is deferred.
         * The floor represents the bottom tier.

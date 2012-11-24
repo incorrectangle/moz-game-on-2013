@@ -39,6 +39,17 @@ mod({
         //-----------------------------
         //  METHODS
         //-----------------------------
+        //-----------------------------
+        //  GETTERS/SETTERS
+        //-----------------------------
+        /** * *
+        * Gets the JSONObject property.
+        * The JSON representation of this object.
+        * @returns {Object} JSONObject 
+        * * **/
+        GameObject.prototype.__defineGetter__('JSONObject', function GameObject_getJSONObject() {
+            throw new Error('The base GameObject has no JSON representation.');
+        });
         /** * *
         * Gets the view property.
         * If this is the first time view has been accessed, it is created and returned.

@@ -6,7 +6,7 @@
 * 
 * @author   Schell Scivally 
 * @since    Sun Nov 18 13:51:08 2012  
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * **/
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * **/
 mod({
     name : 'GameMap',
     dependencies : [ 
@@ -34,7 +34,7 @@ mod({
             * The height of the map.
             * @type {number}
             * * **/
-            this.height = w || 16;
+            this.height = h || 16;
         }
 
         GameMap.prototype = {}; 
@@ -61,8 +61,16 @@ mod({
         * @param {number} x
         * @param {number} y
         * * **/
-        GameMap.prototype.addObjectAt = function GameMap_addObjectAt(object, x, y) {
+        GameMap.prototype.addObjectAtXY = function GameMap_addObjectAtXY(object, x, y) {
             var ndx = y*this.width + x;
+            this.addObjectAtNdx(ndx);
+        };
+        /** * *
+        * Adds a game object to the unit at the given map index.
+        * @param {GameObject} object 
+        * @param {number} ndx
+        * * **/
+        GameMap.prototype.addObjectAtNdx = function GameMap_addObjectAtNdx(object, ndx) {
             var unit = this.mapUnits[ndx];
             switch (object.tier) {
                 case 0:
@@ -80,6 +88,21 @@ mod({
         //-----------------------------
         //  GETTERS/SETTERS
         //-----------------------------
+        /** * *
+        * Gets the JSONObject property.
+        * The JSON representation of this object.
+        * @returns {Object} JSONObject 
+        * * **/
+        GameMap.prototype.__defineGetter__('JSONObject', function GameMap_getJSONObject() {
+            return {
+                constructor : 'GameMap',
+                width : this.width,
+                height : this.height,
+                units : this.mapUnits.map(function (el) {
+                    return el.JSONObject;
+                })
+            };
+        });
         /** * *
         * Gets the mapUnits property. Its creation is deferred.
         * Holds the flattened list of three-tiered GameMapUnits.
