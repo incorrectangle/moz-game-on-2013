@@ -52,6 +52,11 @@ mod({
            * @type {number}
            * * **/
            this.objectColumns = 13;
+           /** * *
+           * The name of this level.
+           * @type {String}
+           * * **/
+           this.name = 'unnamed level';
         }
 
         Level.prototype = new Game(); 
@@ -84,6 +89,7 @@ mod({
             this.addKeyDownAction(191 /* / */, new Action(function toggleHelp() {
                 if (this.stage.canvas.parentNode.contains(this.helpPanel)) {
                     this.stage.canvas.parentNode.removeChild(this.helpPanel);
+                    this._helpPanel = false;
                 } else {
                     this.stage.canvas.parentNode.insertBefore(this.helpPanel, this.stage.canvas);
                 }
@@ -204,12 +210,33 @@ mod({
             document.getElementById('output').innerText = JSON.stringify(this.JSONObject);
         };
         /** * *
-        * Loads a level from the input textarea.
+        * Saves the current level.
         * * **/
-        Level.prototype.load = function Level_load() {
-            var json = document.getElementById('input').value;
-            var object = JSON.parse(json);
-            console.log(object);
+        Level.prototype.store = function Level_store() {
+            this.name = window.prompt('Please name this level:', this.name);
+            var levels = JSON.parse(localStorage.getItem('levels')) || {};
+            levels[this.name] = this.JSONObject;
+            localStorage.setItem('levels',JSON.stringify(levels));
+        };
+        /** * *
+        * Loads a level from the input textarea.
+        * @param {String} name
+        * * **/
+        Level.prototype.load = function Level_load(name) {
+            var object = false;
+            if (name) {
+                var levels = this.levels;
+                for (var i=0; i < levels.length; i++) {
+                    var level = levels[i];
+                    if (level.name === name) {
+                        object = level;
+                        break;
+                    }
+                } 
+            } else {
+                var json = document.getElementById('input').value;
+                object = JSON.parse(json);
+            }
             this.fromJSONObject(object);
         };
         /** * *
@@ -254,6 +281,19 @@ mod({
         //  GETTERS/SETTERS
         //-----------------------------
         /** * *
+        * Gets the levels property.
+        * Levels stored in local storage.
+        * @returns {Array} levels 
+        * * **/
+        Level.prototype.__defineGetter__('levels', function Level_getlevels() {
+            var a = [];
+            var json = JSON.parse(localStorage.getItem('levels')) || {};
+            for (var name in json) {
+                a.push(json[name]); 
+            };
+            return a;
+        });
+        /** * *
         * Gets the JSONObject property.
         * The JSON representation of this object.
         * @returns {Object} JSONObject 
@@ -262,6 +302,7 @@ mod({
             var self = this;
             return {
                 constructor : 'Level',
+                name : this.name,
                 objects : this.objects.map(function(el) {
                     return el.JSONObject;
                 }),
@@ -297,11 +338,17 @@ mod({
                 helpPanel.innerHTML = [
                     '<fieldset>',
                     '<legend>Help & Options</legend>',
-                    '<p><b>Use the mouse or arrows to select an object, then use the mouse to place the object on the map.</b></p>',
+                    '<p>Use the mouse or arrows to select an object, then use the mouse to place the object on the map.</p>',
                     '<a href="#" onclick="editor.print()">Output (print) the current level</a> - reads to output below<br />',
                     '<a href="#" onclick="editor.load()">Input (load) a level into the editor</a> - reads from input below<br />',
-                    '<a href="#" onclick="editor.reset()">Reset the editor</a><br />',
-                    '<p>&nbsp;</p>',
+                    '<a href="#" onclick="editor.store()">Save (store) the current level in local browser storage</a><br />',
+                    '<span>&nbsp;</span>',
+                    '<fieldset>',
+                    '<legend>Stored Levels</legend>',
+                    this.levels.map(function(level) {
+                        return '<a href="#" onclick="editor.load(\''+level.name+'\')">'+level.name+'</a>&nbsp;';
+                    }).join(''),
+                    '</fieldset>',
                     '<fieldset>',
                     '<legend>Hotkeys</legend>',
                     '<p>/ - toggle help</p>',
@@ -321,7 +368,6 @@ mod({
                     'position:absolute;',
                     'width:100%;',
                     'height:100%;',
-                    'background-color:#484848;',
                     'color:white;'
                 ].join('');
                 this._helpPanel = helpPanel;
@@ -376,6 +422,7 @@ mod({
                 this.status = this.selectionStatus;
                 this.objectSelector.x = this.selection.view.x - this.objectPanelPadding/2;
                 this.objectSelector.y = this.selection.view.y - this.objectPanelPadding/2;
+                this.objectPanel.addViewAt(this.objectSelector, 0);
         });
         /** * *
         * Gets the selectionStatus property. 
@@ -444,19 +491,6 @@ mod({
             return this._objectSelector;
         });
         /** * *
-        * Gets the objectsContainer property.
-        * If this is the first time objectsContainer has been accessed, it is created and returned.
-        * @returns {View} objectsContainer 
-        * * **/
-        Level.prototype.__defineGetter__('objectsContainer', function Level_getobjectsContainer() {
-            if (!this._objectsContainer) {
-                var objectsContainer = new View(10,10);
-                
-                this._objectsContainer = objectsContainer;
-            }
-                return this._objectsContainer;
-        });
-        /** * *
         * Gets the statusBar property. Its creation is deferred.
         * 
         * @returns {View} statusBar 
@@ -478,7 +512,6 @@ mod({
                 panel.context.fillStyle = 'rgb(48,48,48)';
                 panel.context.fillRect(0,0,512,512);
                 // Add things to it...
-                panel.addView(this.objectSelector);
                 for (var i=0; i < this.objects.length; i++) {
                     var obj = this.objects[i];
                     var p = this.positionOfObjectAtNdx(i);
@@ -503,6 +536,7 @@ mod({
             this.statusBar.context.textBaseline = 'top';
             this.statusBar.context.font = 'Bold 12px sans-serif';
             this.statusBar.context.fillText(status,4,3);
+            this.stage.addView(this.statusBar);
         });
         return Level;
     }
