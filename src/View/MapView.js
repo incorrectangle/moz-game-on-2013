@@ -121,7 +121,11 @@ mod({
                         // The tile view...
                         var tileView = this.tiles[this.tileNdx[ndx]];
                         // Draw!
+                        try {
                         this.context.drawImage(tileView.context.canvas, 0, 0, tileView.width, tileView.height, offsetx, offsety, tileView.width, tileView.height);
+                        } catch (e) {
+                            console.log('aoeusnth');
+                        }
                     }
                 }
             }

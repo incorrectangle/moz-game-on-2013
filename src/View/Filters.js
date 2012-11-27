@@ -46,7 +46,7 @@ mod({
             * Green.
             * @type {number}
             * * **/
-            this.g = r || 0;
+            this.g = g || 0;
             /** * *
             * Blue.
             * @type {number}
@@ -83,8 +83,25 @@ mod({
             * * **/
             this.imageData = false; 
         };
+        /** * *
+        * Gets the isBlack property.
+        * 
+        * @returns {boolean} isBlack 
+        * * **/
+        Filters.Pixel.prototype.__defineGetter__('isBlack', function Filters_Pixel_getisBlack() {
+            return (this.a === 255 && this.r === 0 && this.g === 0 && this.b === 0);
+        });
+        /** * *
+        * Gets the isWhite property.
+        * 
+        * @returns {boolean} isWhite 
+        * * **/
+        Filters.Pixel.prototype.__defineGetter__('isWhite', function Filters_Pixel_getisWhite() {
+            return (this.a === 255 && this.r === 255 && this.g === 255 && this.b === 255);
+        });       
+
         Filters.Pixel.prototype = {};
-        Filters.prototype.constructor = Filters.Pixel;
+        Filters.Pixel.prototype.constructor = Filters.Pixel;
         //-----------------------------
         //  STATIC METHODS
         //-----------------------------

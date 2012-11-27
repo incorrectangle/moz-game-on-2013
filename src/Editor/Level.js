@@ -18,12 +18,16 @@ mod({
         'bang::Geometry/Rectangle.js',
         'moon::View/MapView.js',
         'bang::View/Stage.js',
-        'bang::Geometry/Vector.js'
+        'bang::Geometry/Vector.js',
+        'moon::Objects/Actor.js',
+        'moon::Objects/Moonen.js'
     ],
     /** * *
     * Initializes the Level constructor.
     * * **/
-    init : function initLevelConstructor(Game, GameObject, GameMap, Action, View, MapPiece, Rectangle, MapView, Stage, Vector) {
+    init : function initLevelConstructor(Game, GameObject, GameMap, Action, 
+                                         View, MapPiece, Rectangle, MapView, 
+                                         Stage, Vector, Actor, Moonen) {
         /** * *
         * Constructs new Levels.
         * @constructor
@@ -134,6 +138,7 @@ mod({
             // add our views...
             this.stage.addView(this.objectPanel);
             this.stage.addView(this.mapView);
+            this.stage.addView(this.actorView);
             this.stage.addView(this.statusBar);
             this.status = 'Select a game object with arrows. Hit / for help.';
             var self = this;
@@ -182,6 +187,13 @@ mod({
             return ndx;
         };
         /** * *
+        * Adds a tile to the appropriate MapView.
+        * @param {GameObject} gameObject
+        * * **/
+        Level.prototype.addTileObject = function Level_addTileObject(gameObject) {
+            [this.mapView,this.actorView][gameObject.tier].addTile(gameObject.view);
+        };
+        /** * *
         * Deposits a tile at the spot on the map.
         * @param {number} x
         * @param {number} y
@@ -197,9 +209,19 @@ mod({
         * @param {number} ndx
         * * **/
         Level.prototype.updateMapNdxWithObjectAtNdx = function Level_updateMapNdxWithObjectAtNdx(mapNdx,selectedNdx) {
-            this.mapView.tileNdx[mapNdx] = selectedNdx;
-
             var obj = this.objects[selectedNdx];
+            switch (obj.tier) {
+                case 0: // Floor...
+                    var objNdx = this.mapView.tiles.indexOf(obj.view);
+                    this.mapView.tileNdx[mapNdx] = objNdx;
+                break;
+                case 1: // Actor...
+                    var objNdx = this.actorView.tiles.indexOf(obj.view);
+                    this.actorView.tileNdx[mapNdx] = objNdx;
+                break;
+                default:
+            }
+
             this.gameMap.addObjectAtNdx(obj, mapNdx);
             this.stage.needsDisplay = true;
         };
@@ -258,7 +280,7 @@ mod({
                 Rectangle.apply(r, object.frame);
                 var addition = new MapPiece(object.name,object.description,object.src,r);
                 this.objects.push(addition);
-                this.mapView.addTile(addition.view);    
+                this.addTileObject(addition);    
             }
             
             this.stage.addView(this.objectPanel);
@@ -382,8 +404,21 @@ mod({
         Level.prototype.__defineGetter__('mapView', function Level_getmapView() {
             if (!this._mapView) {
                 this._mapView = new MapView(512,0,512,512);
+                this._mapView.tag = "mapView";
             }
             return this._mapView;
+        });
+        /** * *
+        * Gets the actorView property.
+        * 
+        * @returns {MapView} actorView 
+        * * **/
+        Level.prototype.__defineGetter__('actorView', function Level_getactorView() {
+            if (!this._actorView) {
+                this._actorView = new MapView(512,0,512,512);
+                this._actorView.tag = "actorView";
+            }
+            return this._actorView;
         });
         /** * *
         * Gets the mapSelector property. Its creation is deferred.
@@ -447,7 +482,7 @@ mod({
         * * **/
         Level.prototype.__defineGetter__('objects', function Level_getobjects() {
             if (!this._objects) {
-                this._objects = [
+                var objects = [
                     new MapPiece('Floor', ' - A floor tile', 'img/tiles.png', new Rectangle(0,0,32,32)),
                     new MapPiece('Wall (Top)', ' - A top wall tile', 'img/tiles.png', new Rectangle(32,0,32,32)),
                     new MapPiece('Wall (Middle)', ' - A middle wall tile', 'img/tiles.png', new Rectangle(32,32,32,32)),
@@ -466,11 +501,18 @@ mod({
                     new MapPiece('Vertical Wall (Bottom)', ' - A bottom vertical wall tile', 'img/tiles.png', new Rectangle(160,64,32,32)),
                     new MapPiece('Vertical Wall Repeating (Top)', ' - A cap to a repeating vertical wall tile', 'img/tiles.png', new Rectangle(192,0,32,32)),
                     new MapPiece('Vertical Wall Repeating', ' - A repeating vertical wall tile', 'img/tiles.png', new Rectangle(192,32,32,32)),
+                    new Actor('Nothing', ' - Exactly what you think it is.', 'img/tiles.png', new Rectangle(511,511,1,1)),
+                    new Actor('Scooter', ' - Our protagonist astronaut explorer.', 'img/tiles.png', new Rectangle(0,96,32,32)),
+                    new Actor('Jolt Cola', ' - All the sugar and twice the caffeine. Oh, and twice the astronaut...', 'img/tiles.png', new Rectangle(192,64,32,32)),
+                    new Moonen('red'),
+                    new Moonen('green'),
+                    new Moonen('blue'),
                 ];
-                var mv = this.mapView;
-                this._objects.map(function(el) {
-                    mv.addTile(el.view);
+                var self = this;
+                objects.map(function(object) {
+                    self.addTileObject(object);
                 });
+                this._objects = objects;
             }
             return this._objects;
         });

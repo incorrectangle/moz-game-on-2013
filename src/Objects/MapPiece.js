@@ -65,7 +65,8 @@ mod({
                 name : this.name,
                 description : this.description,
                 src : this.src,
-                frame : [this.frame.x(),this.frame.y(),this.frame.width(),this.frame.height()]
+                frame : [this.frame.x(),this.frame.y(),this.frame.width(),this.frame.height()],
+                tier : this.tier
             };
         });
         /** * *

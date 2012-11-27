@@ -11,13 +11,14 @@ mod({
     dependencies : [ 
         'bang::View/View.js',
         'bang::Geometry/Rectangle.js',
-        'bang::Utils/Animation.js'
+        'bang::Utils/Animation.js',
+        'moon::Events/Reactor.js'
     ],
     /** * *
     * Initializes the Sprite constructor.
     * @param {function():View}
     * * **/
-    init : function initSpriteConstructor(View, Rectangle, Animation) {
+    init : function initSpriteConstructor(View, Rectangle, Animation, Reactor) {
         /** * *
         * Constructs new sprites.
         * @constructor
@@ -116,6 +117,20 @@ mod({
         Sprite.prototype = new View();
         Sprite.prototype.constructor = Sprite;
         //-----------------------------
+        //  GETTERS/SETTERS
+        //-----------------------------
+        /** * *
+        * Gets the reactor property.
+        * A reactor for actioning.
+        * @returns {Reactor} reactor 
+        * * **/
+        Sprite.prototype.__defineGetter__('reactor', function Sprite_getreactor() {
+            if (!this._reactor) {
+                this._reactor = new Reactor();
+            }
+            return this._reactor;
+        });
+        //-----------------------------
         //  METHODS
         //-----------------------------
         /** * *
@@ -128,6 +143,8 @@ mod({
                 ]; 
             }
             this.updateContextWithCurrentFrame();
+            // Have other things react to the load...
+            this.reactor.react('onSpriteSheetLoad', this);
         };
         /** * *
         * Handles the unsuccesful load of the sprite sheet.
