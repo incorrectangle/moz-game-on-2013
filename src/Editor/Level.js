@@ -274,9 +274,7 @@ mod({
         * @param {Object}
         * * **/
         Level.prototype.fromJSONObject = function Level_fromJSONObject(obj) {
-            this.stage.addView(this.mapView);
-            this.stage.addView(this.actorView);
-            this.stage.addView(this.statusBar);
+            this.name = obj.name;
             // Now populate them with the new level's values...
             for (var i=0; i < obj.map.length; i++) {
                 var floorNdx = obj.map[i][0];

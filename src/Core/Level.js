@@ -16,11 +16,13 @@ mod({
         'moon::Map/GameMap.js',
         'moon::Objects/Actor.js',
         'moon::Objects/Moonen.js',
+        'moon::Objects/Objects.js'
     ],
     /** * *
     * Initializes the Level constructor.
     * * **/
-    init : function initLevelConstructor(View, MapView, MapPiece, Action, GameMap, Actor, Moonen) {
+    init : function initLevelConstructor(View, MapView, MapPiece, Action, 
+                                         GameMap, Actor, Moonen, Objects) {
         /** * *
         * Constructs new Levels.
         * @constructor
@@ -41,43 +43,15 @@ mod({
         * @param {Object} levelObject
         * * **/
         Level.prototype.load = function Level_load(levelObject) {
-            // Remove the old floor view objects...
-            this.mapView.tiles = [];
-            var rawToFloorNdx = [];
-            var gameObjects = [];
-            var constructors = {
-                'MapPiece' : MapPiece,
-                'Actor' : Actor,
-                'Moonen' : Moonen
-            };
-            for (var i=0; i < levelObject.objects.length; i++) {
-                var object = levelObject.objects[i];
-                var addition = constructors[object.constructor].fromJSONObject(object);
-                if (addition.tier === 0) {
-                    // Note where the object goes...
-                    rawToFloorNdx[i] = this.mapView.tiles.length;
-                    // Add the new floor view objects to the mapView...
-                    addition.iconView.reactor.addAction('onSpriteSheetLoad', new Action(function setNeedsDisplay() {
-                        this.view.stage.needsDisplay = true;
-                    }, this));
-                    this.mapView.addTile(addition.iconView);
-                } else if (object.constructor === 'Actor') {
-                } else if (object.constructor === 'Moonen') {
-                }
-                gameObjects.push(addition);
-            }
-            
             for (var i=0; i < levelObject.map.length; i++) {
-                var object = levelObject.map[i];
-                var gameAddition = false;
-                if (object.floor !== -1) {
-                    this.mapView.tileNdx[i] = rawToFloorNdx[object.floor];
+                var floorNdx = levelObject.map[i][0];
+                var actorNdx = levelObject.map[i][1];
+                var ceilingNdx = levelObject.map[i][2];
+                if (floorNdx !== -1) {
+                    var obj = this.objects[floorNdx];
+                    this.mapView.tileNdx[i] = this.mapView.tiles.indexOf(obj.iconView);
                 }
-                if (object.actor !== -1) {
-
-                }
-                
-            }
+            }           
             this.view.needsDisplay = true;
         };
         //-----------------------------
@@ -118,6 +92,12 @@ mod({
             if (!this._mapView) {
                 this._mapView = new MapView(0,0,512,512);
                 this._mapView.tag = "mapView";
+                for (var i=0; i < this.objects.length; i++) {
+                    var obj = this.objects[i];
+                    if (obj.tier === 0) {
+                        this._mapView.addTile(obj.iconView);
+                    }
+                }
             }
             return this._mapView;
         });
@@ -132,6 +112,17 @@ mod({
             }
             return this._actorView;
         });
-            return Level;
+        /** * *
+        * Gets the objects property.
+        * 
+        * @returns {Array.<GameObject>} objects 
+        * * **/
+        Level.prototype.__defineGetter__('objects', function Level_getobjects() {
+            if (!this._objects) {
+                this._objects = new Objects();
+            }
+            return this._objects;
+        });
+        return Level;
     }
 });    
