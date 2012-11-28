@@ -1,6 +1,6 @@
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 * GameMapUnit.js
-* A three-tiered map unit used as thi canonical map piece.
+* A three-tiered map unit used as the canonical map piece.
 * Copyright (c) 12 Schell Scivally. All rights reserved.
 * 
 * @author   Schell Scivally 

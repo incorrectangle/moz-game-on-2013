@@ -12,12 +12,15 @@ mod({
         'bang::View/View.js',
         'moon::View/MapView.js',
         'moon::Objects/MapPiece.js',
-        'moon::Events/Action.js'
+        'moon::Events/Action.js',
+        'moon::Map/GameMap.js',
+        'moon::Objects/Actor.js',
+        'moon::Objects/Moonen.js',
     ],
     /** * *
     * Initializes the Level constructor.
     * * **/
-    init : function initLevelConstructor(View, MapView, MapPiece, Action) {
+    init : function initLevelConstructor(View, MapView, MapPiece, Action, GameMap, Actor, Moonen) {
         /** * *
         * Constructs new Levels.
         * @constructor
@@ -40,33 +43,57 @@ mod({
         Level.prototype.load = function Level_load(levelObject) {
             // Remove the old floor view objects...
             this.mapView.tiles = [];
-            var actors = [];
             var rawToFloorNdx = [];
+            var gameObjects = [];
+            var constructors = {
+                'MapPiece' : MapPiece,
+                'Actor' : Actor,
+                'Moonen' : Moonen
+            };
             for (var i=0; i < levelObject.objects.length; i++) {
                 var object = levelObject.objects[i];
-                if (object.constructor === 'MapPiece') {
+                var addition = constructors[object.constructor].fromJSONObject(object);
+                if (addition.tier === 0) {
                     // Note where the object goes...
                     rawToFloorNdx[i] = this.mapView.tiles.length;
                     // Add the new floor view objects to the mapView...
-                    var mapPiece = MapPiece.fromJSONObject(object);
-                    mapPiece.view.reactor.addAction('onSpriteSheetLoad', new Action(function setNeedsDisplay() {
+                    addition.view.reactor.addAction('onSpriteSheetLoad', new Action(function setNeedsDisplay() {
                         this.view.stage.needsDisplay = true;
                     }, this));
-                    this.mapView.addTile(mapPiece.view);
+                    this.mapView.addTile(addition.view);
+                } else if (object.constructor === 'Actor') {
+                } else if (object.constructor === 'Moonen') {
                 }
+                gameObjects.push(addition);
             }
             
             for (var i=0; i < levelObject.map.length; i++) {
                 var object = levelObject.map[i];
+                var gameAddition = false;
                 if (object.floor !== -1) {
                     this.mapView.tileNdx[i] = rawToFloorNdx[object.floor];
                 }
+                if (object.actor !== -1) {
+
+                }
+                
             }
             this.view.needsDisplay = true;
         };
         //-----------------------------
         //  GETTERS/SETTERS
         //-----------------------------
+        /** * *
+        * Gets the gameMap property.
+        * Holds the three tiered game data for the entire map.
+        * @returns {GameMap} gameMap 
+        * * **/
+        Level.prototype.__defineGetter__('gameMap', function Level_getgameMap() {
+            if (!this._gameMap) {
+                this._gameMap = new GameMap();
+            }
+            return this._gameMap;
+        });
         /** * *
         * Gets the view property.
         * 

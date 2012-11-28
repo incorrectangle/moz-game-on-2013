@@ -20,14 +20,18 @@ mod({
         'bang::View/Stage.js',
         'bang::Geometry/Vector.js',
         'moon::Objects/Actor.js',
-        'moon::Objects/Moonen.js'
+        'moon::Objects/Moonen.js',
+        'moon::Objects/Astronaut.js',
+        'moon::Objects/JoltCola.js',
+        'moon::Objects/KeyCartridge.js'
     ],
     /** * *
     * Initializes the Level constructor.
     * * **/
     init : function initLevelConstructor(Game, GameObject, GameMap, Action, 
                                          View, MapPiece, Rectangle, MapView, 
-                                         Stage, Vector, Actor, Moonen) {
+                                         Stage, Vector, Actor, Moonen, 
+                                         Astronaut, JoltCola, KeyCartridge) {
         /** * *
         * Constructs new Levels.
         * @constructor
@@ -283,9 +287,6 @@ mod({
             };
             for (var i=0; i < obj.objects.length; i++) {
                 var object = obj.objects[i];
-                var r = new Rectangle();
-                Rectangle.apply(r, object.frame);
-                
                 var addition = constructors[object.constructor].fromJSONObject(object);
                 this.objects.push(addition);
                 this.addTileObject(addition);    
@@ -511,9 +512,9 @@ mod({
                     new MapPiece('Vertical Wall Repeating (Top)', ' - A cap to a repeating vertical wall tile', 'img/tiles.png', new Rectangle(192,0,32,32)),
                     new MapPiece('Vertical Wall Repeating', ' - A repeating vertical wall tile', 'img/tiles.png', new Rectangle(192,32,32,32)),
                     new Actor('Nothing', ' - Exactly what you think it is.', 'img/tiles.png', new Rectangle(511,511,1,1)),
-                    new Actor('Scooter', ' - Our protagonist astronaut explorer.', 'img/tiles.png', new Rectangle(0,96,32,32)),
-                    new Actor('Key Cartridge', ' - 16 bits of door opening mayhem...', 'img/tiles.png', new Rectangle(192,96,32,32)),
-                    new Actor('Jolt Cola', ' - All the sugar and twice the caffeine. Oh, and twice the astronaut...', 'img/tiles.png', new Rectangle(192,64,32,32)),
+                    new Astronaut(),
+                    new KeyCartridge(),
+                    new JoltCola(),
                     new Moonen('red'),
                     new Moonen('green'),
                     new Moonen('blue'),
