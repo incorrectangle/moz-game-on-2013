@@ -32,11 +32,6 @@ mod({
             * * **/
             this.stage = new Stage(w,h);
             /** * *
-            * A layering of game object maps.
-            * @type {Array.<Array.<GameObject>>}
-            * * **/
-            this.objectMaps = this.objectMaps || [];
-            /** * *
             * Key down actions.
             * @type {Array.<Array.<Action>>}
             * * **/

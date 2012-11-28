@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+        <title>.:Moonening:.</title>
+        <style type="text/css" media="screen">
+            body {
+                    background-color: #AAAAAA;
+        			margin:0px;
+                    padding:0px;
+        			font-family: Verdana,Geneva,Arial,sans-serif;
+        			font-size: 12px;
+        			line-height: 15px;
+        		}
+            canvas {
+                background-color:transparent;
+                margin:0px;
+                padding:0px;
+            }
+            a {
+                font-weight:bold;
+                color:#aed646;
+                text-decoration:none;
+            }
+            a:hover {
+                color:#4b8f43;
+                background:#aed646;
+            }
+            fieldset {
+                background-color:#484848;
+            }
+            legend {
+                font-weight:bold;
+            }
+        </style>
+        <script src="submodules/bang/mod.js" type="text/javascript" charset="utf-8"></script>
+        <link rel="shortcut icon" href="favicon.png" />
+    </head>
+    <body id="body">
+        
+        <div id="bang"></div>
+        <script type="text/javascript" charset="utf-8">
+            mod.useTagInjection = true;
+            mod.expansions = {
+                bang : 'submodules/bang/src/',
+                moon : 'src/'
+            };
+            mod({
+                name : "Main",
+                dependencies : [
+                    'moon::Editor/Level.js',
+                ],
+                init : function initMain (LevelEditor) {
+                    var editor = new LevelEditor();
+                    editor.init();
+                    window.editor = editor;
+                    mod.exportAll();
+                }
+            });
+        </script>
+    </body>
+</html>

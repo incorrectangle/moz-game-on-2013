@@ -27,6 +27,11 @@ mod({
         * * **/ 
         function Moonen(color) {
             Actor.call(this, 'Moonen', ' - A '+color+' colored moonen.', 'img/tiles.png', new Rectangle(96,160,32,32));
+            /** * *
+            * The color of this Moonen.
+            * @type {String} color The css color of the Moonen.
+            * * **/
+            this.color = color || 'chartruese';
 
             var colorizeTrick = new Action(function colorize() {
                 // Make a reference to the old sheet...
@@ -57,7 +62,6 @@ mod({
                     }),frame.x(),frame.y());
                 }
                 this.view.updateContextWithCurrentFrame();
-                document.body.appendChild(canvas);
             }, this);
             this.view.reactor.addAction('onSpriteSheetLoad', colorizeTrick);
         }
@@ -65,9 +69,25 @@ mod({
         Moonen.prototype = new Actor();
         Moonen.prototype.constructor = Moonen;
         //-----------------------------
+        //  STATIC METHODS
+        //-----------------------------
+        Moonen.fromJSONObject = function Moonen_fromJSONObject(object) {
+            return new Moonen(object.color);
+        };
+        //-----------------------------
         //  METHODS
         //-----------------------------
-
+        /** * *
+        * Gets the JSONObject property.
+        * 
+        * @returns {Object} JSONObject 
+        * * **/
+        Moonen.prototype.__defineGetter__('JSONObject', function Moonen_getJSONObject() {
+            return {
+                constructor : 'Moonen',
+                color : this.color
+            };
+        });
         return Moonen;
     }
 });    

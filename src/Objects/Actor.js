@@ -34,6 +34,14 @@ mod({
         Actor.prototype = new MapPiece(); 
         Actor.prototype.constructor = Actor;
         //-----------------------------
+        //  STATIC METHODS
+        //-----------------------------
+        Actor.fromJSONObject = function Actor_fromJSONObject(object) {
+            var r = new Rectangle();
+            Rectangle.apply(r, object.frame);
+            return new Actor(object.name,object.description,object.src,r);
+        };
+        //-----------------------------
         //  METHODS
         //-----------------------------
         //-----------------------------
@@ -46,7 +54,7 @@ mod({
         * * **/
         Actor.prototype.__defineGetter__('JSONObject', function MapPiece_getJSONObject() {
             return {
-                constructor : 'MapPiece',
+                constructor : 'Actor',
                 name : this.name,
                 description : this.description,
                 src : this.src,

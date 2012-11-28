@@ -42,6 +42,14 @@ mod({
         MapPiece.prototype = new GameObject();
         MapPiece.prototype.constructor = MapPiece;
         //-----------------------------
+        //  STATIC METHODS
+        //-----------------------------
+        MapPiece.fromJSONObject = function MapPiece_fromJSONObject(object) {
+            var r = new Rectangle();
+            Rectangle.apply(r, object.frame);
+            return new MapPiece(object.name,object.description,object.src,r);
+        };
+        //-----------------------------
         //  METHODS
         //-----------------------------
         /** * *

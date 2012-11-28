@@ -269,22 +269,31 @@ mod({
             // Remove these views and force them to reload...
             this.objectPanel.parent.removeView(this.objectPanel);
             this.mapView.parent.removeView(this.mapView);
+            this.actorView.parent.removeView(this.actorView);
             this._objectPanel = false;
             this._mapView = false;
+            this._actorView = false;
             this._gameMap = false;
 
             this.objects.splice(0,this.objects.length);
+            var constructors = {
+                'MapPiece' : MapPiece,
+                'Actor' : Actor,
+                'Moonen' : Moonen
+            };
             for (var i=0; i < obj.objects.length; i++) {
                 var object = obj.objects[i];
                 var r = new Rectangle();
                 Rectangle.apply(r, object.frame);
-                var addition = new MapPiece(object.name,object.description,object.src,r);
+                
+                var addition = constructors[object.constructor].fromJSONObject(object);
                 this.objects.push(addition);
                 this.addTileObject(addition);    
             }
             
             this.stage.addView(this.objectPanel);
             this.stage.addView(this.mapView);
+            this.stage.addView(this.actorView);
             // Now populate them with the new level's values...
             for (var i=0; i < obj.map.length; i++) {
                 var config = obj.map[i];
@@ -503,6 +512,7 @@ mod({
                     new MapPiece('Vertical Wall Repeating', ' - A repeating vertical wall tile', 'img/tiles.png', new Rectangle(192,32,32,32)),
                     new Actor('Nothing', ' - Exactly what you think it is.', 'img/tiles.png', new Rectangle(511,511,1,1)),
                     new Actor('Scooter', ' - Our protagonist astronaut explorer.', 'img/tiles.png', new Rectangle(0,96,32,32)),
+                    new Actor('Key Cartridge', ' - 16 bits of door opening mayhem...', 'img/tiles.png', new Rectangle(192,96,32,32)),
                     new Actor('Jolt Cola', ' - All the sugar and twice the caffeine. Oh, and twice the astronaut...', 'img/tiles.png', new Rectangle(192,64,32,32)),
                     new Moonen('red'),
                     new Moonen('green'),
