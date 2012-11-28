@@ -30,6 +30,16 @@ mod({
         Astronaut.prototype = new Actor(); 
         Astronaut.prototype.constructor = Astronaut;
         //-----------------------------
+        //  STATIC METHODS
+        //-----------------------------
+        /** * *
+        * Returns a new astronaut from a config object.
+        * @return {Astronaut}
+        * * **/
+        Astronaut.fromJSONObject = function Astronaut_fromJSONObject() {
+            return new Astronaut();
+        };
+        //-----------------------------
         //  GETTERS/SETTERS
         //-----------------------------
         /** * *

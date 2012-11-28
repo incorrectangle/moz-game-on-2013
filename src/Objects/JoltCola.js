@@ -30,6 +30,16 @@ mod({
         JoltCola.prototype = new Actor(); 
         JoltCola.prototype.constructor = JoltCola;
         //-----------------------------
+        //  STATIC METHODS
+        //-----------------------------
+        /** * *
+        * Returns a new JoltCola using a config object.
+        * @return {JoltCola}
+        * * **/
+        JoltCola.fromJSONObject = function JoltCola_fromJSONObject() {
+            return new JoltCola();
+        };
+        //-----------------------------
         //  GETTERS/SETTERS
         //-----------------------------
         /** * *

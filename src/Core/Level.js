@@ -16,13 +16,19 @@ mod({
         'moon::Map/GameMap.js',
         'moon::Objects/Actor.js',
         'moon::Objects/Moonen.js',
-        'moon::Objects/Objects.js'
+        'moon::Objects/Objects.js',
+        'moon::Map/GameMapUnit.js',
+        'moon::Objects/Astronaut.js',
+        'moon::Objects/JoltCola.js',
+        'moon::Objects/KeyCartridge.js'
     ],
     /** * *
     * Initializes the Level constructor.
     * * **/
     init : function initLevelConstructor(View, MapView, MapPiece, Action, 
-                                         GameMap, Actor, Moonen, Objects) {
+                                         GameMap, Actor, Moonen, Objects,
+                                         GameMapUnit, Astronaut, JoltCola,
+                                         KeyCartridge) {
         /** * *
         * Constructs new Levels.
         * @constructor
@@ -43,16 +49,50 @@ mod({
         * @param {Object} levelObject
         * * **/
         Level.prototype.load = function Level_load(levelObject) {
+            var constructors = {
+                'Actor' : Actor,
+                'Astronaut' : Astronaut,
+                'KeyCartridge' : KeyCartridge,
+                'JoltCola' : JoltCola,
+                'Moonen' : Moonen
+            };
             for (var i=0; i < levelObject.map.length; i++) {
                 var floorNdx = levelObject.map[i][0];
                 var actorNdx = levelObject.map[i][1];
                 var ceilingNdx = levelObject.map[i][2];
+                var mapUnit = new GameMapUnit();
                 if (floorNdx !== -1) {
                     var obj = this.objects[floorNdx];
                     this.mapView.tileNdx[i] = this.mapView.tiles.indexOf(obj.iconView);
+                    mapUnit.floor = obj;
+                }
+                if (actorNdx !== -1) {
+                    var obj = this.objects[actorNdx];
+                    var config = obj.JSONObject;
+                    var newActor = constructors[config.constructor].fromJSONObject(config); 
+                    mapUnit.actor = newActor;
+                    var position = this.positionOfActorWithIndex(i);
+                    newActor.iconView.x = position[0];
+                    newActor.iconView.y = position[1];
+                    this.actorView.addView(newActor.iconView);
+                }
+                if (ceilingNdx !== -1) {
                 }
             }           
+            this.gameMap[i] = mapUnit;
             this.view.needsDisplay = true;
+        };
+        /** * *
+        * The [x,y] position of an actor at the given index in the game map.
+        * @param {number} ndx
+        * @return {Array.<number>}
+        * * **/
+        Level.prototype.positionOfActorWithIndex = function Level_positionOfActorWithIndex(ndx) {
+            var x = (ndx%this.gameMap.width);
+            x *= this.mapView.tileWidth;
+            var y = Math.floor(ndx/this.gameMap.width);
+            y *= this.mapView.tileHeight;
+            return [x, y];
         };
         //-----------------------------
         //  GETTERS/SETTERS

@@ -30,6 +30,16 @@ mod({
         KeyCartridge.prototype = new Actor(); 
         KeyCartridge.prototype.constructor = KeyCartridge;
         //-----------------------------
+        //  STATIC METHODS
+        //-----------------------------
+        /** * *
+        * Creates a new KeyCartridge from a config object.
+        * @param {Object} object
+        * * **/
+        KeyCartridge.fromJSONObject = function KeyCartridge_fname(object) {
+            return new KeyCartridge();
+        };
+        //-----------------------------
         //  GETTERS/SETTERS
         //-----------------------------
         /** * *
