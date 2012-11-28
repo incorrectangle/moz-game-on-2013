@@ -57,10 +57,10 @@ mod({
                     // Note where the object goes...
                     rawToFloorNdx[i] = this.mapView.tiles.length;
                     // Add the new floor view objects to the mapView...
-                    addition.view.reactor.addAction('onSpriteSheetLoad', new Action(function setNeedsDisplay() {
+                    addition.iconView.reactor.addAction('onSpriteSheetLoad', new Action(function setNeedsDisplay() {
                         this.view.stage.needsDisplay = true;
                     }, this));
-                    this.mapView.addTile(addition.view);
+                    this.mapView.addTile(addition.iconView);
                 } else if (object.constructor === 'Actor') {
                 } else if (object.constructor === 'Moonen') {
                 }

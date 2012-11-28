@@ -50,11 +50,11 @@ mod({
         * If this is the first time view has been accessed, it is created and returned.
         * @returns {View} view 
         * * **/
-        GameObject.prototype.__defineGetter__('view', function GameObject_getview() {
-            if (!this._view) {
-                this._view = new View();
+        GameObject.prototype.__defineGetter__('iconView', function GameObject_geticonView() {
+            if (!this._iconView) {
+                this._iconView = new View();
             }
-                return this._view;
+                return this._iconView;
         });
         /** * *
         * Gets the actions property. Its creation is deferred.

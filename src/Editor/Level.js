@@ -23,7 +23,8 @@ mod({
         'moon::Objects/Moonen.js',
         'moon::Objects/Astronaut.js',
         'moon::Objects/JoltCola.js',
-        'moon::Objects/KeyCartridge.js'
+        'moon::Objects/KeyCartridge.js',
+        'moon::Objects/Objects.js'
     ],
     /** * *
     * Initializes the Level constructor.
@@ -31,7 +32,7 @@ mod({
     init : function initLevelConstructor(Game, GameObject, GameMap, Action, 
                                          View, MapPiece, Rectangle, MapView, 
                                          Stage, Vector, Actor, Moonen, 
-                                         Astronaut, JoltCola, KeyCartridge) {
+                                         Astronaut, JoltCola, KeyCartridge, Objects) {
         /** * *
         * Constructs new Levels.
         * @constructor
@@ -129,7 +130,7 @@ mod({
                 } else {
                     // The mousedown happened in the object panel...
                     for (var i=0; i < this.objects.length; i++) {
-                        var view = this.objects[i].view;
+                        var view = this.objects[i].iconView;
                         if (view.vectorToGlobal(view.localBoundary()).containsPoint(new Vector(e.offsetX,e.offsetY))) {
                             this.selectionNdx = i;
                             break;
@@ -195,7 +196,7 @@ mod({
         * @param {GameObject} gameObject
         * * **/
         Level.prototype.addTileObject = function Level_addTileObject(gameObject) {
-            [this.mapView,this.actorView][gameObject.tier].addTile(gameObject.view);
+            [this.mapView,this.actorView][gameObject.tier].addTile(gameObject.iconView);
         };
         /** * *
         * Deposits a tile at the spot on the map.
@@ -214,13 +215,16 @@ mod({
         * * **/
         Level.prototype.updateMapNdxWithObjectAtNdx = function Level_updateMapNdxWithObjectAtNdx(mapNdx,selectedNdx) {
             var obj = this.objects[selectedNdx];
+            if (!obj) {
+                return;
+            }
             switch (obj.tier) {
                 case 0: // Floor...
-                    var objNdx = this.mapView.tiles.indexOf(obj.view);
+                    var objNdx = this.mapView.tiles.indexOf(obj.iconView);
                     this.mapView.tileNdx[mapNdx] = objNdx;
                 break;
                 case 1: // Actor...
-                    var objNdx = this.actorView.tiles.indexOf(obj.view);
+                    var objNdx = this.actorView.tiles.indexOf(obj.iconView);
                     this.actorView.tileNdx[mapNdx] = objNdx;
                 break;
                 default:
@@ -270,43 +274,18 @@ mod({
         * @param {Object}
         * * **/
         Level.prototype.fromJSONObject = function Level_fromJSONObject(obj) {
-            // Remove these views and force them to reload...
-            this.objectPanel.parent.removeView(this.objectPanel);
-            this.mapView.parent.removeView(this.mapView);
-            this.actorView.parent.removeView(this.actorView);
-            this._objectPanel = false;
-            this._mapView = false;
-            this._actorView = false;
-            this._gameMap = false;
-
-            this.objects.splice(0,this.objects.length);
-            var constructors = {
-                'MapPiece' : MapPiece,
-                'Actor' : Actor,
-                'Moonen' : Moonen
-            };
-            for (var i=0; i < obj.objects.length; i++) {
-                var object = obj.objects[i];
-                var addition = constructors[object.constructor].fromJSONObject(object);
-                this.objects.push(addition);
-                this.addTileObject(addition);    
-            }
-            
-            this.stage.addView(this.objectPanel);
             this.stage.addView(this.mapView);
             this.stage.addView(this.actorView);
+            this.stage.addView(this.statusBar);
             // Now populate them with the new level's values...
             for (var i=0; i < obj.map.length; i++) {
-                var config = obj.map[i];
-                if (config.floor !== -1) {
-                    this.updateMapNdxWithObjectAtNdx(i, config.floor);
-                }
-                if (config.actor !== -1) {
-                    this.updateMapNdxWithObjectAtNdx(i, config.actor);
-                }
-                if (config.ceiling !== -1) {
-                    this.updateMapNdxWithObjectAtNdx(i, config.ceil);
-                }
+                var floorNdx = obj.map[i][0];
+                var actorNdx = obj.map[i][1];
+                var ceilingNdx = obj.map[i][2];
+
+                this.updateMapNdxWithObjectAtNdx(i, floorNdx);
+                this.updateMapNdxWithObjectAtNdx(i, actorNdx);
+                this.updateMapNdxWithObjectAtNdx(i, ceilingNdx);
             }
         };
         //-----------------------------
@@ -335,15 +314,12 @@ mod({
             return {
                 constructor : 'Level',
                 name : this.name,
-                objects : this.objects.map(function(el) {
-                    return el.JSONObject;
-                }),
                 map : this.gameMap.mapUnits.map(function(el) {
-                    return {
-                        floor : self.objects.indexOf(el.floor),
-                        actor : self.objects.indexOf(el.actor),
-                        ceiling : self.objects.indexOf(el.ceiling)
-                    };
+                    return [
+                        self.objects.indexOf(el.floor),
+                        self.objects.indexOf(el.actor),
+                        self.objects.indexOf(el.ceiling)
+                    ];
                 })
             };
         });
@@ -465,8 +441,8 @@ mod({
         Level.prototype.__defineSetter__('selectionNdx', function Level_setselectionNdx(selectionNdx) {
                 this._selectionNdx = selectionNdx < 0 ? this.objects.length-1 : selectionNdx%this.objects.length;
                 this.status = this.selectionStatus;
-                this.objectSelector.x = this.selection.view.x - this.objectPanelPadding/2;
-                this.objectSelector.y = this.selection.view.y - this.objectPanelPadding/2;
+                this.objectSelector.x = this.selection.iconView.x - this.objectPanelPadding/2;
+                this.objectSelector.y = this.selection.iconView.y - this.objectPanelPadding/2;
                 this.objectPanel.addViewAt(this.objectSelector, 0);
         });
         /** * *
@@ -492,34 +468,8 @@ mod({
         * * **/
         Level.prototype.__defineGetter__('objects', function Level_getobjects() {
             if (!this._objects) {
-                var objects = [
-                    new MapPiece('Floor', ' - A floor tile', 'img/tiles.png', new Rectangle(0,0,32,32)),
-                    new MapPiece('Wall (Top)', ' - A top wall tile', 'img/tiles.png', new Rectangle(32,0,32,32)),
-                    new MapPiece('Wall (Middle)', ' - A middle wall tile', 'img/tiles.png', new Rectangle(32,32,32,32)),
-                    new MapPiece('Wall (Bottom)', ' - A bottom wall tile', 'img/tiles.png', new Rectangle(32,64,32,32)),
-                    new MapPiece('Wall to Door (Top)', ' - A top wall to door tile', 'img/tiles.png', new Rectangle(64,0,32,32)),
-                    new MapPiece('Wall to Door (Middle)', ' - A middle wall to door tile', 'img/tiles.png', new Rectangle(64,32,32,32)),
-                    new MapPiece('Wall to Door (Bottom)', ' - A bottom wall to door tile', 'img/tiles.png', new Rectangle(64,64,32,32)),
-                    new MapPiece('Door (Top)', ' - A top door tile', 'img/tiles.png', new Rectangle(96,0,32,32)),
-                    new MapPiece('Door (Middle)', ' - A middle door tile', 'img/tiles.png', new Rectangle(96,32,32,32)),
-                    new MapPiece('Door (Bottom)', ' - A bottom door tile', 'img/tiles.png', new Rectangle(96,64,32,32)),
-                    new MapPiece('Door to Wall (Top)', ' - A top door to wall tile', 'img/tiles.png', new Rectangle(128,0,32,32)),
-                    new MapPiece('Door to Wall (Middle)', ' - A middle door to wall tile', 'img/tiles.png', new Rectangle(128,32,32,32)),
-                    new MapPiece('Door to Wall (Bottom)', ' - A bottom door to wall tile', 'img/tiles.png', new Rectangle(128,64,32,32)),
-                    new MapPiece('Vertical Wall (Top)', ' - A top vertical wall tile', 'img/tiles.png', new Rectangle(160,0,32,32)),
-                    new MapPiece('Vertical Wall (Middle)', ' - A middle vertical wall tile', 'img/tiles.png', new Rectangle(160,32,32,32)),
-                    new MapPiece('Vertical Wall (Bottom)', ' - A bottom vertical wall tile', 'img/tiles.png', new Rectangle(160,64,32,32)),
-                    new MapPiece('Vertical Wall Repeating (Top)', ' - A cap to a repeating vertical wall tile', 'img/tiles.png', new Rectangle(192,0,32,32)),
-                    new MapPiece('Vertical Wall Repeating', ' - A repeating vertical wall tile', 'img/tiles.png', new Rectangle(192,32,32,32)),
-                    new Actor('Nothing', ' - Exactly what you think it is.', 'img/tiles.png', new Rectangle(511,511,1,1)),
-                    new Astronaut(),
-                    new KeyCartridge(),
-                    new JoltCola(),
-                    new Moonen('red'),
-                    new Moonen('green'),
-                    new Moonen('blue'),
-                ];
                 var self = this;
+                var objects = new Objects();
                 objects.map(function(object) {
                     self.addTileObject(object);
                 });
@@ -568,9 +518,9 @@ mod({
                 for (var i=0; i < this.objects.length; i++) {
                     var obj = this.objects[i];
                     var p = this.positionOfObjectAtNdx(i);
-                    obj.view.x = p.x; 
-                    obj.view.y = p.y; 
-                    panel.addView(obj.view);
+                    obj.iconView.x = p.x; 
+                    obj.iconView.y = p.y; 
+                    panel.addView(obj.iconView);
                 }
                 this._objectPanel = panel;
             }

@@ -78,19 +78,19 @@ mod({
             };
         });
         /** * *
-        * Gets the view property. Its creation is deferred.
+        * Gets the iconView property. Its creation is deferred.
         * 
-        * @returns {View} view 
+        * @returns {View} iconView 
         * * **/
-        MapPiece.prototype.__defineGetter__('view', function MapPiece_getview() {
-            if (!this._view) {
+        MapPiece.prototype.__defineGetter__('iconView', function MapPiece_geticonView() {
+            if (!this._iconView) {
                 var w = this.frame.width();
                 var h = this.frame.height();
-                this._view = new Sprite(0,0,w,h,this.src, [
+                this._iconView = new Sprite(0,0,w,h,this.src, [
                     this.frame
                 ]);
             }
-            return this._view;
+            return this._iconView;
         });
         return MapPiece;
     }

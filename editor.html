@@ -51,10 +51,14 @@
                     'moon::Editor/Level.js',
                 ],
                 init : function initMain (LevelEditor) {
-                    var editor = new LevelEditor();
-                    editor.init();
-                    window.editor = editor;
-                    mod.exportAll();
+                    try {
+                        var editor = new LevelEditor();
+                        editor.init();
+                        window.editor = editor;
+                        mod.exportAll();
+                    } catch (e) {
+                        console.log(e,e.stack);
+                    }
                 }
             });
         </script>

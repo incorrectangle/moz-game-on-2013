@@ -35,7 +35,7 @@ mod({
 
             var colorizeTrick = new Action(function colorize() {
                 // Make a reference to the old sheet...
-                var sheet = this.view.sheet;
+                var sheet = this.iconView.sheet;
                 // Make a new canvas to hold the new data...
                 var canvas = document.createElement('canvas');
                 canvas.width = sheet.width;
@@ -47,10 +47,10 @@ mod({
                 var data = context.getImageData(0,0,1,1);
                 var pixelColor = Filters.pixelAt(data,0,0);
                 context.drawImage(sheet,0,0);
-                this.view.sheet = canvas;
+                this.iconView.sheet = canvas;
                 // Run through each frame and update the color...
-                for (var i=0; i < this.view.frames.length; i++) {
-                    var frame = this.view.frames[i];
+                for (var i=0; i < this.iconView.frames.length; i++) {
+                    var frame = this.iconView.frames[i];
                     var imageData = context.getImageData(frame.x(),frame.y(),frame.width(),frame.height());
                     context.putImageData(Filters.mapBitmap(imageData, function colorize(pixel, imageData) {
                         if (pixel.a > 0 && !pixel.isBlack && !pixel.isWhite) {
@@ -61,9 +61,9 @@ mod({
                         return pixel;
                     }),frame.x(),frame.y());
                 }
-                this.view.updateContextWithCurrentFrame();
+                this.iconView.updateContextWithCurrentFrame();
             }, this);
-            this.view.reactor.addAction('onSpriteSheetLoad', colorizeTrick);
+            this.iconView.reactor.addAction('onSpriteSheetLoad', colorizeTrick);
         }
 
         Moonen.prototype = new Actor();
