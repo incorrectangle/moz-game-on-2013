@@ -72,9 +72,9 @@ mod({
                     var newActor = constructors[config.constructor].fromJSONObject(config); 
                     mapUnit.actor = newActor;
                     var position = this.positionOfActorWithIndex(i);
-                    newActor.iconView.x = position[0];
-                    newActor.iconView.y = position[1];
-                    this.actorView.addView(newActor.iconView);
+                    newActor.view.x = position[0];
+                    newActor.view.y = position[1];
+                    this.actorView.addView(newActor.view);
                 }
                 if (ceilingNdx !== -1) {
                 }

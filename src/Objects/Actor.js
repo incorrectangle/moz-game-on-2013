@@ -61,6 +61,17 @@ mod({
                 frame : [this.frame.x(),this.frame.y(),this.frame.width(),this.frame.height()]
             };
         });
+        /** * *
+        * Gets the view property.
+        * The main (possibly animated) view for this actor.
+        * @returns {View} view 
+        * * **/
+        Actor.prototype.__defineGetter__('view', function Actor_getview() {
+            if (!this._view) {
+                this._view = this.iconView;
+            }
+            return this._view;
+        });
 
         return Actor;
     }
