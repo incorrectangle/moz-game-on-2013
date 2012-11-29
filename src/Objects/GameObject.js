@@ -10,12 +10,13 @@ mod({
     name : 'GameObject',
     dependencies : [ 
         'moon::Events/Reactor.js',
-        'moon::Events/Action.js'
+        'moon::Events/Action.js',
+        'moon::Events/ActionsDefault.js'
     ],
     /** * *
     * Initializes the GameObject constructor.
     * * **/
-    init : function initGameObjectConstructor(Reactor, Action) {
+    init : function initGameObjectConstructor(Reactor, Action, ActionsDefault) {
         /** * *
         * Constructs new GameObjects.
         * @constructor
@@ -39,12 +40,31 @@ mod({
             * @type {number}
             * * **/
             this.tier = 0;
+            /** * *
+            * Whether or not this object currently has focus.
+            * @type {boolean}
+            * * **/
+            this.hasFocus = false;
+            /** * *
+            * The level that the actor is in.
+            * @type {Object}
+            * * **/
+            this.level = false;
         }
 
         GameObject.prototype = {}; 
         GameObject.prototype.constructor = GameObject;
         //-----------------------------
         //  METHODS
+        //-----------------------------
+        /** * *
+        * Forwards to reactor.react.
+        * * **/
+        GameObject.prototype.react = function GameObject_react() {
+            this.reactor.react.apply(this.reactor, arguments);
+        };
+        //-----------------------------
+        //  GETTERS/SETTERS
         //-----------------------------
         /** * *
         * Gets the view property.
@@ -63,16 +83,11 @@ mod({
         * @returns {Object.<String, Actions>} actions 
         * * **/
         GameObject.prototype.__defineGetter__('actions', function GameObject_getactions() {
-        if (!this._actions) {
-            var self = this;
-            this._actions = {
-                'iterate' : new Action(function skipIteration(level) {
-                    level.reactor.react('iterationComplete');
-                }, self)
-            };
-        }
+            if (!this._actions) {
+                this._actions = new ActionsDefault(this); 
+            }
             return this._actions;
-    });
+        });
         /** * *
         * Gets the reactor property.
         * Manages object events.

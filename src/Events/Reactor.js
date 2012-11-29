@@ -67,13 +67,16 @@ mod({
         /** * *
         * Executes the actions for a given event name.
         * @param {String} eventName The name of the event to trigger the actions of.
-        * @param {*} payload Whatever the payload of the event is.
+        * @param {...} rest To be given to the receiving Action.
         * * **/
-        Reactor.prototype.react = function Reactor_react(eventName, payload) {
+        Reactor.prototype.react = function Reactor_react(eventName) {
             if (eventName in this.actions) {
                 for (var i=0; i < this.actions[eventName].length; i++) {
                     var action = this.actions[eventName][i];
-                    action.respond(payload);
+                    var params = Array.prototype.slice.call(arguments) || [];
+                    // Get rid of the eventName...
+                    params.shift();
+                    action.respond.apply(action, params);
                 }
             }
         };

@@ -9,7 +9,7 @@
 mod({
     name : 'Moonening',
     dependencies : [ 
-        'moon::Game.js',
+        'moon::Core/Game.js',
         'moon::Events/Action.js',
         'moon::Core/Level.js'
     ],
@@ -43,12 +43,16 @@ mod({
              Game.prototype.init.call(this);    
             // add our key hooks...
             this.addKeyDownAction(37/* LEFT */, new Action(function left() {
+                this.level.reactor.react('left');
             }, this));
             this.addKeyDownAction(38/* UP */, new Action(function up() {
+                this.level.reactor.react('up');
             }, this));
             this.addKeyDownAction(39/* RIGHT */, new Action(function right() {
+                this.level.reactor.react('right');
             }, this));
             this.addKeyDownAction(40/* DOWN */, new Action(function down() {
+                this.level.reactor.react('down');
             }, this));
             // Add the level to the stage...
             this.stage.addView(this.level.view);

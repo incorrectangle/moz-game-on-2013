@@ -9,7 +9,7 @@
 mod({
     name : 'Level',
     dependencies : [ 
-        'moon::Game.js',
+        'moon::Core/Game.js',
         'moon::Objects/GameObject.js',
         'moon::Events/Action.js',
         'bang::View/View.js',

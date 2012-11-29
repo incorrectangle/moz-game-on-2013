@@ -10,12 +10,13 @@ mod({
     name : 'Astronaut',
     dependencies : [ 
         'moon::Objects/Actor.js',
-        'bang::Geometry/Rectangle.js'
+        'bang::Geometry/Rectangle.js',
+        'moon::Events/ActionsDefault.js'
     ],
     /** * *
     * Initializes the Astronaut constructor.
     * * **/
-    init : function initAstronautConstructor(Actor, Rectangle) {
+    init : function initAstronautConstructor(Actor, Rectangle, ActionsDefault) {
         /** * *
         * Constructs new Astronauts.
         * @constructor
@@ -52,10 +53,38 @@ mod({
                 constructor : 'Astronaut',
             };
         });
+        /** * *
+        * Gets the actions property.
+        * This is used to populate the reactor's actions with.
+        * @returns {Object.<String, Actions>} actions 
+        * * **/
+        Astronaut.prototype.__defineGetter__('actions', function Astronaut_getactions() {
+            if (!this._actions) {
+                var self = this;
+                var actions = new ActionsDefault(this); 
+                actions.turn = new Action(function getTurn() {
+                    // Block until a move has been made by the player...
+                }, self);
+                // The move actions...
+                actions.left = new Action(function levelLeft() {
+                    this.attemptMove('left');
+                }, self);
+                actions.right = new Action(function levelRight() {
+                    this.attemptMove('right');
+                }, self);
+                actions.up = new Action(function levelUp() {
+                    this.attemptMove('up');
+                }, self);
+                actions.down = new Action(function levelDown() {
+                    this.attemptMove('down');
+                }, self);
+                this._actions = actions;
+            }
+            return this._actions;
+        });
         //-----------------------------
         //  METHODS
         //-----------------------------
-
         return Astronaut;
     }
 });    

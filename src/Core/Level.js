@@ -36,20 +36,20 @@ mod({
         * * **/ 
         function Level() {
             /** * *
-            * The number of iterations per turn.
-            * @type {number}
+            * A list of actors that are waiting for their turn.
+            * @type {Array.<Actor>}
             * * **/
-            this.iterationsPerTurn = 3;
+            this.actorsWithATurn = []; 
             /** * *
-            * The current number of iterations left this turn.
-            * @type {number}
+            * A list of all the actors currently in the game.
+            * @type {Array.<Actor>}
             * * **/
-            this.iterationsLeftThisTurn = 3;
+            this.actorMap = [];
             /** * *
-            * The current iteration.
-            * @type {number} 
+            * The actor that currently has focus.
+            * @type {Actor}
             * * **/
-            this.currentIteration = 0;
+            this.actorWithFocus = false;
         }
 
         Level.prototype = {}; 
@@ -69,7 +69,11 @@ mod({
                 'JoltCola' : JoltCola,
                 'Moonen' : Moonen
             };
+
+            this.actorsWithATurn = [];
+            this.actorMap = [];
             this.mapView.tileNdx = levelObject.floor;
+
             var actorStartNdx = 0;
             for (var i=0; i < this.objects.length; i++) {
                 if (this.objects[i].tier === 1) {
@@ -77,7 +81,7 @@ mod({
                     break;
                 }
             }
-
+            
             for (var i=0; i < levelObject.actors.length; i++) {
                 var actorNdx = levelObject.actors[i];
                 var objectNdx = actorStartNdx + actorNdx;
@@ -88,11 +92,18 @@ mod({
                     var position = this.positionOfActorWithIndex(i);
                     newActor.view.x = position[0];
                     newActor.view.y = position[1];
+                    newActor.level = this;
                     this.actorView.addView(newActor.view);
+                    this.actorMap[i] = newActor;
                 }
             }           
             this.view.needsDisplay = true;
-            this.iterationsLeftThisTurn = this.iterationsPerTurn;
+
+            // Start the game!
+            var self = this;
+            setTimeout(function() {
+                self.iterate();
+            }, 1);
         };
         /** * *
         * The [x,y] position of an actor at the given index in the game map.
@@ -107,28 +118,36 @@ mod({
             return [x, y];
         };
         /** * *
-        * Iterates over the game map unit at the given index, 
-        * focusing on the actor, allowing that actor to move 
-        * and trigger actions and reactions.
-        * @param {number} ndx The index of the unit to iterate over.
+        * Iterates over the actors, giving them focus and allowing them
+        * to mutate the board.
         * * **/
-        Level.prototype.iterate = function Level_iterate(ndx) {
-            ndx = ndx || 0;
-            this.currentIteration = ndx;
-
-            if (!this.iterationsLeftThisTurn) {
-                this.iterationsLeftThisTurn = 3;
-                this.iterate(ndx+1);
-                return;
+        Level.prototype.iterate = function Level_iterate() {
+            if (!this.actorsWithATurn.length) {
+                // Build a new turn sequence and iterate over that...
+                for (var i=0; i < this.actorMap.length; i++) {
+                    var actor = this.actorMap[i];
+                    if (!actor) {
+                        // This is the 'Nothing' actor, which we should skip...
+                        continue;
+                    }
+                    this.actorsWithATurn.push(actor);
+                } 
             }
-            var position = this.positionOfActorWithIndex(ndx);
-            this.selector.x = position[0];
-            this.selector.y = position[1];
-            this.iterationsLeftThisTurn--; 
-            var unit = this.gameMap.mapUnits[ndx];
-            var gameObject = [unit.ceiling, unit.actor, unit.floor][this.iterationsLeftThisTurn];
-            console.log('iterating over ',ndx,this.iterationsLeftThisTurn);
-            gameObject.reactor.react('iterate', this);
+
+            var actor = this.actorsWithATurn.shift();
+            actor.hasFocus = true;
+            this.actorWithFocus = actor;
+            this.selector.x = actor.view.x;
+            this.selector.y = actor.view.y;
+            
+            actor.reactor.react('turn');
+        };
+        /** * *
+         * Cleans up after a turn.
+         * * **/
+        Level.prototype.turnOver = function Level_turnOver() {
+            this.actorWithFocus.hasFocus = false;
+            this.iterate();            
         };
         //-----------------------------
         //  GETTERS/SETTERS
@@ -144,6 +163,20 @@ mod({
                 this._actions = {
                     iterationComplete : new Action(function continueIterating() {
                         this.iterate();
+                    }, self),
+                    // The move actions...
+                    left : new Action(function levelLeft() {
+                        // Forward the action to the current actor...
+                        this.actorWithFocus.react('left');
+                    }, self),
+                    right : new Action(function levelRight() {
+                        this.actorWithFocus.react('right');
+                    }, self),
+                    up : new Action(function levelUp() {
+                        this.actorWithFocus.react('up');
+                    }, self),
+                    down : new Action(function levelDown() {
+                        this.actorWithFocus.react('down');
                     }, self)
                 };
             }
@@ -162,19 +195,13 @@ mod({
         });
         /** * *
         * Gets the actorView property.
-        * Draws the level's floor map.
-        * @returns {MapView} actorView 
+        * Holds the game's actors.
+        * @returns {View} actorView 
         * * **/
         Level.prototype.__defineGetter__('actorView', function Level_getactorView() {
             if (!this._actorView) {
-                this._actorView = new MapView(0,0,512,512);
+                this._actorView = new View(0,0,512,512);
                 this._actorView.tag = "actorView";
-                for (var i=0; i < this.objects.length; i++) {
-                    var obj = this.objects[i];
-                    if (obj.tier === 1) {
-                        this._actorView.addTile(obj.iconView);
-                    }
-                }
             }
             return this._actorView;
         });
@@ -188,8 +215,8 @@ mod({
                 var view = new View(0,0,512,512);
                 view.context.fillRect(0,0,512,512);
                 view.addView(this.mapView);
-                view.addView(this.actorView);
                 view.addView(this.selector);
+                view.addView(this.actorView);
                 this._view = view;
             }
             return this._view;
@@ -226,17 +253,6 @@ mod({
                 this._selector = view;
             }
             return this._selector;
-        });
-        /** * *
-        * Gets the actorView property.
-        * Holds the level's actors.
-        * @returns {View} actorView 
-        * * **/
-        Level.prototype.__defineGetter__('actorView', function Level_getactorView() {
-            if (!this._actorView) {
-                this._actorView = new View(0,0,512,512);
-            }
-            return this._actorView;
         });
         /** * *
         * Gets the objects property.
