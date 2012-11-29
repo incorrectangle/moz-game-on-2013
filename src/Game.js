@@ -56,13 +56,6 @@ mod({
 
             var self = this;
             window.onresize = function windowResize() {
-                var w = window.innerWidth;
-                var h = window.innerHeight - 5;
-                self.stage.canvas.width = w; 
-                self.stage.canvas.height = h;
-                self.stage.width = w; 
-                self.stage.height = h; 
-                self.stage.needsDisplay = true;
             };
             document.body.addEventListener('keydown', function(e) {
                 console.log(e.keyCode);

@@ -17,11 +17,16 @@ mod({
         /** * *
         * Constructs new Reactors.
         * @constructor
+        * @param {Object.<String, Action>} actions Actions keyed
+        * by event names to add to the reactor.
         * @nosideeffects
         * @return {Reactor}
         * * **/ 
-        function Reactor() {
-            
+        function Reactor(actions) {
+            actions = actions || {};
+            for (var eventName in actions) {
+                this.addAction(eventName, actions[eventName]);
+            }
         }
 
         Reactor.prototype = {}; 
@@ -71,6 +76,14 @@ mod({
                     action.respond(payload);
                 }
             }
+        };
+        /** * *
+        * Whether or not the reactor reacts to an event of the given name.
+        * @param {String} eventName
+        * @return {boolean}
+        * * **/
+        Reactor.prototype.reactsTo = function Reactor_reactsTo(eventName) {
+            return (eventName in this.actions);
         };
         //-----------------------------
         //  GETTERS/SETTERS

@@ -13,22 +13,21 @@ mod({
         'moon::View/MapView.js',
         'moon::Objects/MapPiece.js',
         'moon::Events/Action.js',
-        'moon::Map/GameMap.js',
         'moon::Objects/Actor.js',
         'moon::Objects/Moonen.js',
         'moon::Objects/Objects.js',
-        'moon::Map/GameMapUnit.js',
         'moon::Objects/Astronaut.js',
         'moon::Objects/JoltCola.js',
-        'moon::Objects/KeyCartridge.js'
+        'moon::Objects/KeyCartridge.js',
+        'moon::Events/Reactor.js'
     ],
     /** * *
     * Initializes the Level constructor.
     * * **/
     init : function initLevelConstructor(View, MapView, MapPiece, Action, 
-                                         GameMap, Actor, Moonen, Objects,
-                                         GameMapUnit, Astronaut, JoltCola,
-                                         KeyCartridge) {
+                                         Actor, Moonen, Objects,
+                                         Astronaut, JoltCola,
+                                         KeyCartridge, Reactor) {
         /** * *
         * Constructs new Levels.
         * @constructor
@@ -36,7 +35,21 @@ mod({
         * @return {Level}
         * * **/ 
         function Level() {
-            
+            /** * *
+            * The number of iterations per turn.
+            * @type {number}
+            * * **/
+            this.iterationsPerTurn = 3;
+            /** * *
+            * The current number of iterations left this turn.
+            * @type {number}
+            * * **/
+            this.iterationsLeftThisTurn = 3;
+            /** * *
+            * The current iteration.
+            * @type {number} 
+            * * **/
+            this.currentIteration = 0;
         }
 
         Level.prototype = {}; 
@@ -56,31 +69,30 @@ mod({
                 'JoltCola' : JoltCola,
                 'Moonen' : Moonen
             };
-            for (var i=0; i < levelObject.map.length; i++) {
-                var floorNdx = levelObject.map[i][0];
-                var actorNdx = levelObject.map[i][1];
-                var ceilingNdx = levelObject.map[i][2];
-                var mapUnit = new GameMapUnit();
-                if (floorNdx !== -1) {
-                    var obj = this.objects[floorNdx];
-                    this.mapView.tileNdx[i] = this.mapView.tiles.indexOf(obj.iconView);
-                    mapUnit.floor = obj;
+            this.mapView.tileNdx = levelObject.floor;
+            var actorStartNdx = 0;
+            for (var i=0; i < this.objects.length; i++) {
+                if (this.objects[i].tier === 1) {
+                    actorStartNdx = i;
+                    break;
                 }
-                if (actorNdx !== -1) {
-                    var obj = this.objects[actorNdx];
+            }
+
+            for (var i=0; i < levelObject.actors.length; i++) {
+                var actorNdx = levelObject.actors[i];
+                var objectNdx = actorStartNdx + actorNdx;
+                if (actorNdx) {
+                    var obj = this.objects[objectNdx];
                     var config = obj.JSONObject;
                     var newActor = constructors[config.constructor].fromJSONObject(config); 
-                    mapUnit.actor = newActor;
                     var position = this.positionOfActorWithIndex(i);
                     newActor.view.x = position[0];
                     newActor.view.y = position[1];
                     this.actorView.addView(newActor.view);
                 }
-                if (ceilingNdx !== -1) {
-                }
             }           
-            this.gameMap[i] = mapUnit;
             this.view.needsDisplay = true;
+            this.iterationsLeftThisTurn = this.iterationsPerTurn;
         };
         /** * *
         * The [x,y] position of an actor at the given index in the game map.
@@ -88,25 +100,83 @@ mod({
         * @return {Array.<number>}
         * * **/
         Level.prototype.positionOfActorWithIndex = function Level_positionOfActorWithIndex(ndx) {
-            var x = (ndx%this.gameMap.width);
+            var x = (ndx%16);
             x *= this.mapView.tileWidth;
-            var y = Math.floor(ndx/this.gameMap.width);
+            var y = Math.floor(ndx/16);
             y *= this.mapView.tileHeight;
             return [x, y];
+        };
+        /** * *
+        * Iterates over the game map unit at the given index, 
+        * focusing on the actor, allowing that actor to move 
+        * and trigger actions and reactions.
+        * @param {number} ndx The index of the unit to iterate over.
+        * * **/
+        Level.prototype.iterate = function Level_iterate(ndx) {
+            ndx = ndx || 0;
+            this.currentIteration = ndx;
+
+            if (!this.iterationsLeftThisTurn) {
+                this.iterationsLeftThisTurn = 3;
+                this.iterate(ndx+1);
+                return;
+            }
+            var position = this.positionOfActorWithIndex(ndx);
+            this.selector.x = position[0];
+            this.selector.y = position[1];
+            this.iterationsLeftThisTurn--; 
+            var unit = this.gameMap.mapUnits[ndx];
+            var gameObject = [unit.ceiling, unit.actor, unit.floor][this.iterationsLeftThisTurn];
+            console.log('iterating over ',ndx,this.iterationsLeftThisTurn);
+            gameObject.reactor.react('iterate', this);
         };
         //-----------------------------
         //  GETTERS/SETTERS
         //-----------------------------
         /** * *
-        * Gets the gameMap property.
-        * Holds the three tiered game data for the entire map.
-        * @returns {GameMap} gameMap 
+        * Gets the actions property.
+        * These are given to the reactor.
+        * @returns {Object.<String, Action>} actions 
         * * **/
-        Level.prototype.__defineGetter__('gameMap', function Level_getgameMap() {
-            if (!this._gameMap) {
-                this._gameMap = new GameMap();
+        Level.prototype.__defineGetter__('actions', function Level_getactions() {
+            if (!this._actions) {
+                var self = this;
+                this._actions = {
+                    iterationComplete : new Action(function continueIterating() {
+                        this.iterate();
+                    }, self)
+                };
             }
-            return this._gameMap;
+            return this._actions;
+        });
+        /** * *
+        * Gets the reactor property.
+        * The reactor manages events.
+        * @returns {Reactor} reactor 
+        * * **/
+        Level.prototype.__defineGetter__('reactor', function Level_getreactor() {
+            if (!this._reactor) {
+                this._reactor = new Reactor(this.actions);
+            }
+            return this._reactor;
+        });
+        /** * *
+        * Gets the actorView property.
+        * Draws the level's floor map.
+        * @returns {MapView} actorView 
+        * * **/
+        Level.prototype.__defineGetter__('actorView', function Level_getactorView() {
+            if (!this._actorView) {
+                this._actorView = new MapView(0,0,512,512);
+                this._actorView.tag = "actorView";
+                for (var i=0; i < this.objects.length; i++) {
+                    var obj = this.objects[i];
+                    if (obj.tier === 1) {
+                        this._actorView.addTile(obj.iconView);
+                    }
+                }
+            }
+            return this._actorView;
         });
         /** * *
         * Gets the view property.
@@ -119,6 +189,7 @@ mod({
                 view.context.fillRect(0,0,512,512);
                 view.addView(this.mapView);
                 view.addView(this.actorView);
+                view.addView(this.selector);
                 this._view = view;
             }
             return this._view;
@@ -140,6 +211,21 @@ mod({
                 }
             }
             return this._mapView;
+        });
+        /** * *
+        * Gets the selector property.
+        * The selector shows which actor has the current focus.
+        * @returns {View} selector 
+        * * **/
+        Level.prototype.__defineGetter__('selector', function Level_getselector() {
+            if (!this._selector) {
+                var view = new View(0,0,32,32);
+                view.context.fillStyle = '#00FF00';
+                view.context.fillRect(0,0,32,32);
+                view.context.clearRect(1,1,30,30); 
+                this._selector = view;
+            }
+            return this._selector;
         });
         /** * *
         * Gets the actorView property.

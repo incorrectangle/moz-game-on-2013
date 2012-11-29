@@ -11,7 +11,6 @@ mod({
     dependencies : [ 
         'moon::Game.js',
         'moon::Objects/GameObject.js',
-        'moon::Map/GameMap.js',
         'moon::Events/Action.js',
         'bang::View/View.js',
         'moon::Objects/MapPiece.js',
@@ -29,7 +28,7 @@ mod({
     /** * *
     * Initializes the Level constructor.
     * * **/
-    init : function initLevelConstructor(Game, GameObject, GameMap, Action, 
+    init : function initLevelConstructor(Game, GameObject, Action, 
                                          View, MapPiece, Rectangle, MapView, 
                                          Stage, Vector, Actor, Moonen, 
                                          Astronaut, JoltCola, KeyCartridge, Objects) {
@@ -152,7 +151,7 @@ mod({
             }, 3000);
 
             // Run through our map and put down default tiles...
-            for (var i=0; i < this.gameMap.mapUnits.length; i++) {
+            for (var i=0; i < 256; i++) {
                 this.updateMapNdxWithObjectAtNdx(i, 0);
             }
         };
@@ -230,7 +229,6 @@ mod({
                 default:
             }
 
-            this.gameMap.addObjectAtNdx(obj, mapNdx);
             this.stage.needsDisplay = true;
         };
         /** * *
@@ -276,15 +274,8 @@ mod({
         Level.prototype.fromJSONObject = function Level_fromJSONObject(obj) {
             this.name = obj.name;
             // Now populate them with the new level's values...
-            for (var i=0; i < obj.map.length; i++) {
-                var floorNdx = obj.map[i][0];
-                var actorNdx = obj.map[i][1];
-                var ceilingNdx = obj.map[i][2];
-
-                this.updateMapNdxWithObjectAtNdx(i, floorNdx);
-                this.updateMapNdxWithObjectAtNdx(i, actorNdx);
-                this.updateMapNdxWithObjectAtNdx(i, ceilingNdx);
-            }
+            this.mapView.tileNdx = obj.floor;
+            this.actorView.tileNdx = obj.actors;
         };
         //-----------------------------
         //  GETTERS/SETTERS
@@ -312,25 +303,25 @@ mod({
             return {
                 constructor : 'Level',
                 name : this.name,
-                map : this.gameMap.mapUnits.map(function(el) {
-                    return [
-                        self.objects.indexOf(el.floor),
-                        self.objects.indexOf(el.actor),
-                        self.objects.indexOf(el.ceiling)
-                    ];
-                })
+                floor : this.mapView.tileNdx,
+                actors : this.actorView.tileNdx,
+                ceiling : false
             };
         });
         /** * *
-        * Gets the gameMap property.
-        * 
-        * @returns {GameMap} gameMap 
+        * Gets the map property.
+        * The actor's map.
+        * @returns {Array.<GameObject>} map 
         * * **/
-        Level.prototype.__defineGetter__('gameMap', function Level_getgameMap() {
-            if (!this._gameMap) {
-                this._gameMap = new GameMap(16,16);
+        Level.prototype.__defineGetter__('map', function Level_getmap() {
+            if (!this._map) {
+                var map = [];
+                for (var i=0; i < 256; i++) {
+                   map.push(0); 
+                }
+                this._map = map;
             }
-            return this._gameMap;
+            return this._map;
         });
         /** * *
         * Gets the helpPanel property.

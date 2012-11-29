@@ -9,12 +9,13 @@
 mod({
     name : 'GameObject',
     dependencies : [ 
-        
+        'moon::Events/Reactor.js',
+        'moon::Events/Action.js'
     ],
     /** * *
     * Initializes the GameObject constructor.
     * * **/
-    init : function initGameObjectConstructor() {
+    init : function initGameObjectConstructor(Reactor, Action) {
         /** * *
         * Constructs new GameObjects.
         * @constructor
@@ -57,15 +58,31 @@ mod({
                 return this._iconView;
         });
         /** * *
-        * Gets the actions property. Its creation is deferred.
-        * The actions this game object is capable of.
-        * @returns {Object.<string, Action>} actions 
+        * Gets the actions property.
+        * This is used to populate the reactor's actions with.
+        * @returns {Object.<String, Actions>} actions 
         * * **/
         GameObject.prototype.__defineGetter__('actions', function GameObject_getactions() {
-            if (!this._actions) {
-                this._actions = {}; 
-            }
+        if (!this._actions) {
+            var self = this;
+            this._actions = {
+                'iterate' : new Action(function skipIteration(level) {
+                    level.reactor.react('iterationComplete');
+                }, self)
+            };
+        }
             return this._actions;
+    });
+        /** * *
+        * Gets the reactor property.
+        * Manages object events.
+        * @returns {Reactor} reactor 
+        * * **/
+        GameObject.prototype.__defineGetter__('reactor', function GameObject_getreactor() {
+            if (!this._reactor) {
+                this._reactor = new Reactor(this.actions);
+            }
+            return this._reactor;
         });
         return GameObject;
     }

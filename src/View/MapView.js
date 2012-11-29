@@ -155,6 +155,15 @@ mod({
             return this._tileNdx;
         });
         /** * *
+        * Sets the tileNdx property.
+        * 
+        * @param {Array.<number>} 
+        * * **/
+        MapView.prototype.__defineSetter__('tileNdx', function MapView_settileNdx(tileNdx) {
+            this._tileNdx = tileNdx;
+            this.stage.needsDisplay = true;
+        });
+        /** * *
         * Gets the scrollX property.
         * The number of pixels scrolled in the x axis. 
         * @returns {number} scrollX 
