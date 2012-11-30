@@ -83,6 +83,33 @@ mod({
             * * **/
             this.imageData = false; 
         };
+
+        Filters.Pixel.prototype = {};
+        Filters.Pixel.prototype.constructor = Filters.Pixel;
+        //-----------------------------
+        //  METHODS
+        //-----------------------------
+        /** * *
+        * Whether or not this pixel is equal to another.
+        * @param {Filter.Pixel} pixel
+        * @return {boolean}
+        * * **/
+        Filters.Pixel.prototype.isEqualTo = function Filters_Pixel_isEqualTo(pixel) {
+            return (this.r === pixel.r && 
+                    this.g === pixel.g && 
+                    this.b === pixel.b && 
+                    this.a === pixel.a);
+        };
+        /** * *
+        * Returns the css color string.
+        * @return {String}
+        * * **/
+        Filters.Pixel.prototype.toCSSString = function Filters_Pixel_toCSSString() {
+            return 'rgba('+this.r.toString()+','+this.g.toString()+','+this.b.toString()+','+this.a.toString()+')';    
+        };
+        //-----------------------------
+        //  GETTERS/SETTERS
+        //-----------------------------
         /** * *
         * Gets the isBlack property.
         * 
@@ -99,9 +126,6 @@ mod({
         Filters.Pixel.prototype.__defineGetter__('isWhite', function Filters_Pixel_getisWhite() {
             return (this.a === 255 && this.r === 255 && this.g === 255 && this.b === 255);
         });       
-
-        Filters.Pixel.prototype = {};
-        Filters.Pixel.prototype.constructor = Filters.Pixel;
         //-----------------------------
         //  STATIC METHODS
         //-----------------------------

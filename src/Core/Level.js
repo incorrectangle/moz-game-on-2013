@@ -164,6 +164,18 @@ mod({
                 self.iterate();            
             }, 1);
         };
+        /** * *
+         * Removes an actor from the game, but does not remove its view.
+         * @param {Actor} actor
+         * * **/
+        Level.prototype.removeActor = function Level_removeActor(actor) {
+            var mapNdx = this.actorMap.indexOf(actor);
+            var turnNdx = this.actorsWithATurn.indexOf(actor);
+            this.actorMap[mapNdx] = false;
+            if (turnNdx !== -1) {
+                this.actorsWithATurn.splice(turnNdx, 1);
+            }
+        };
         //-----------------------------
         //  GETTERS/SETTERS
         //-----------------------------

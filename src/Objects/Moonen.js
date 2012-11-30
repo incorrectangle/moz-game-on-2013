@@ -33,8 +33,14 @@ mod({
             * The color of this Moonen.
             * @type {String} color The css color of the Moonen.
             * * **/
-            this.color = color || 'chartruese';
+            this.color = color || 'black';
+            /** * *
+            * The pixel color of the moonen.
+            * @type {Filters.Pixel}
+            * * **/
+            this.pixelColor = false;
 
+            var self = this;
             function colorizeAction(view)  {
                 return new Action(function colorize() {
                     // Make a reference to the old sheet...
@@ -49,6 +55,7 @@ mod({
                     context.fillRect(0,0,1,1);
                     var data = context.getImageData(0,0,1,1);
                     var pixelColor = Filters.pixelAt(data,0,0);
+                    this.pixelColor = pixelColor;
                     context.drawImage(sheet,0,0);
                     view.sheet = canvas;
                     // Run through each frame and update the color...
@@ -65,7 +72,7 @@ mod({
                         }),frame.x(),frame.y());
                     }
                     view.updateContextWithCurrentFrame();
-                }, this);
+                }, self);
             }
             this.iconView.reactor.addAction('onSpriteSheetLoad', colorizeAction(this.iconView));
             this.view.reactor.addAction('onSpriteSheetLoad', colorizeAction(this.view));
@@ -173,7 +180,7 @@ mod({
         * * **/
         Moonen.prototype.__defineGetter__('interact', function Moonen_getinteract() {
             if (!this._interact) {
-                this._interact = new Action(function eatSomething(actor) {
+                this._interact = new Action(function eatSomethingComingAtYou(actor) {
                     if (actor.name === 'Scooter') {
                         actor.react('die');
                         console.log('Die, Scooter!');
@@ -186,7 +193,46 @@ mod({
                     }
                     if (actor.name === 'Moonen') {
                         // Consume each other...
-                        console.log(this.color,this.name,'ate a',actor.color,'Moonen');
+                        console.log(actor.color,actor.name,'jumped into and ate a',this.color,this.name);
+                        if (this.pixelColor.isEqualTo(actor.pixelColor)) {
+                            console.log('    and they both died!!!');
+                            this.level.removeActor(this);
+                            this.level.removeActor(actor);
+                            actor.view.parent.removeView(actor);
+                            this.view.parent.removeView(this);
+                        } else {
+                            var r = (this.pixelColor.r + actor.pixelColor.r)%256;
+                            var g = (this.pixelColor.g + actor.pixelColor.g)%256;
+                            var b = (this.pixelColor.b + actor.pixelColor.b)%256;
+                            var color = new Filters.Pixel(r,g,b,255);
+                            var actorNdx = this.level.actorMap.indexOf(actor); 
+                            var selfNdx = this.level.actorMap.indexOf(this);
+                            var turnNdx = this.level.actorsWithATurn.indexOf(this);
+                            // Take both out...
+                            this.level.removeActor(actor);
+                            this.level.removeActor(this);
+                            this.view.parent.removeView(this.view);
+                            actor.view.parent.removeView(actor.view);
+                            // Make the new one...
+                            var newMoonen = new Moonen(color.toCSSString());
+                            var pos = this.level.positionOfActorWithIndex(selfNdx);
+                            newMoonen.view.x = pos[0];
+                            newMoonen.view.y = pos[1];
+                            newMoonen.level = this.level;
+                            //newMoonen.view.alpha = 0;
+                            this.level.actorMap[selfNdx] = newMoonen;
+                            if (turnNdx !== -1) {
+                                this.level.actorsWithATurn.splice(turnNdx,0,newMoonen);
+                            }
+                            //new Ease({
+                            //    target : newMoonen.view,
+                            //    properties : {
+                            //        alpha : 1
+                            //    },
+                            //    duration : 500
+                            //}).interpolate();
+                            console.log('    and they combined to make a',color.toCSSString(),'Moonen!!!');
+                        }
                         return this.level.turnOver();
                     }
                     actor.react('interact', this);
