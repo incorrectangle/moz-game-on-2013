@@ -10,7 +10,8 @@ mod({
     name : 'Actor',
     dependencies : [ 
         'moon::Objects/MapPiece.js',
-        'bang::Geometry/Rectangle.js'
+        'bang::Geometry/Rectangle.js',
+        'moon::Events/ActionsDefault.js'
     ],
     /** * *
     * Initializes the Actor constructor.
@@ -30,6 +31,11 @@ mod({
             this.tier = 1;
             this.src = src || false;
             this.frame = frame || new Rectangle();
+            /** * *
+            * A backlog of the indices this actor has occupied.
+            * @type {Array.<number>}
+            * * **/
+            this.steps = [];
         }
         Actor.prototype = new MapPiece(); 
         Actor.prototype.constructor = Actor;
@@ -44,50 +50,20 @@ mod({
         //-----------------------------
         //  METHODS
         //-----------------------------
-        /** * *
-        * Creates a move action for the astronaut.
-        * @param {String} direction
-        * @return {Action}
-        * * **/
-        Actor.prototype.attemptMove = function Actor_attemptMove(direction) {
-            var mapNdx = this.level.actorMap.indexOf(this);
-            var moves = {
-                left : mapNdx - 1,
-                right : mapNdx + 1,
-                down : mapNdx + 16,
-                up : mapNdx - 16
-            };
-
-            var newSpot = moves[direction];
-            if (direction === 'right' && newSpot%16 === 0) {
-                return;
-            }
-            if (direction === 'left' && newSpot%16 === 15) {
-                return;
-            }
-            if (newSpot < 0) {
-                return;
-            }
-            if (newSpot > 255) {
-                return;
-            }
-
-            var actorAtNewSpot = this.level.actorMap[newSpot];
-            if (actorAtNewSpot) {
-                actorAtNewSpot.react('interact',this);
-            } else {
-                // Just move there...
-                var nextPos = this.level.positionOfActorWithIndex(newSpot);
-                this.level.actorMap[mapNdx] = false;
-                this.level.actorMap[newSpot] = this;
-                this.view.x = nextPos[0];
-                this.view.y = nextPos[1];
-                this.level.turnOver();
-            }
-        };
         //-----------------------------
         //  GETTERS/SETTERS
         //-----------------------------
+        /** * *
+        * Gets the actions property.
+        * Adds movement actions.
+        * @returns {Object.<String, Action>} actions 
+        * * **/
+        Actor.prototype.__defineGetter__('actions', function Actor_getactions() {
+            if (!this._actions) {
+                this._actions = new ActionsDefault(this);
+            }
+            return this._actions;
+        });
         /** * *
         * Gets the JSONObject property.
         * The JSON representation of this object.
@@ -113,6 +89,9 @@ mod({
             }
             return this._view;
         });
+        //-----------------------------
+        //  METHODS
+        //-----------------------------
 
         return Actor;
     }

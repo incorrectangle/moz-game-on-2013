@@ -137,8 +137,13 @@ mod({
             var actor = this.actorsWithATurn.shift();
             actor.hasFocus = true;
             this.actorWithFocus = actor;
-            this.selector.x = actor.view.x;
-            this.selector.y = actor.view.y;
+            if (actor.name === 'Scooter') {
+                this.selector.alpha = 1;
+                this.selector.x = actor.view.x;
+                this.selector.y = actor.view.y;
+            } else {
+                this.selector.alpha = 0;
+            }
             
             actor.reactor.react('turn');
         };
@@ -147,7 +152,17 @@ mod({
          * * **/
         Level.prototype.turnOver = function Level_turnOver() {
             this.actorWithFocus.hasFocus = false;
-            this.iterate();            
+            for (var i=0; i < this.actorMap.length; i++) {
+                var actor = this.actorMap[i];
+                if (actor) {
+                    // Add it to the stage (z-sorting)...
+                    this.actorView.addView(actor.view);
+                }
+            }
+            var self = this;
+            setTimeout(function nextTurn() {
+                self.iterate();            
+            }, 1);
         };
         //-----------------------------
         //  GETTERS/SETTERS
@@ -167,16 +182,24 @@ mod({
                     // The move actions...
                     left : new Action(function levelLeft() {
                         // Forward the action to the current actor...
-                        this.actorWithFocus.react('left');
+                        if (this.actorWithFocus.name === 'Scooter') {
+                            this.actorWithFocus.react('left');
+                        }
                     }, self),
                     right : new Action(function levelRight() {
-                        this.actorWithFocus.react('right');
+                        if (this.actorWithFocus.name === 'Scooter') {
+                            this.actorWithFocus.react('right');
+                        }
                     }, self),
                     up : new Action(function levelUp() {
-                        this.actorWithFocus.react('up');
+                        if (this.actorWithFocus.name === 'Scooter') {
+                            this.actorWithFocus.react('up');
+                        }
                     }, self),
                     down : new Action(function levelDown() {
-                        this.actorWithFocus.react('down');
+                        if (this.actorWithFocus.name === 'Scooter') {
+                            this.actorWithFocus.react('down');
+                        }
                     }, self)
                 };
             }

@@ -11,12 +11,15 @@ mod({
     dependencies : [ 
         'moon::Objects/Actor.js',
         'bang::Geometry/Rectangle.js',
-        'moon::Events/ActionsDefault.js'
+        'moon::Events/ActionsDefault.js',
+        'moon::Events/ActionsThatMoveActors.js',
+        'moon::View/AstronautView.js',
+        'bang::Utils/Ease.js'
     ],
     /** * *
     * Initializes the Astronaut constructor.
     * * **/
-    init : function initAstronautConstructor(Actor, Rectangle, ActionsDefault) {
+    init : function initAstronautConstructor(Actor, Rectangle, ActionsDefault, MoveActions, AstronautView) {
         /** * *
         * Constructs new Astronauts.
         * @constructor
@@ -44,6 +47,17 @@ mod({
         //  GETTERS/SETTERS
         //-----------------------------
         /** * *
+        * Gets the view property.
+        * 
+        * @returns {AstronautView} view 
+        * * **/
+        Astronaut.prototype.__defineGetter__('view', function Astronaut_getview() {
+            if (!this._view) {
+                this._view = new AstronautView();
+            }
+            return this._view;
+        });
+        /** * *
         * Gets the JSONObject property.
         * 
         * @returns {Object} JSONObject 
@@ -61,26 +75,68 @@ mod({
         Astronaut.prototype.__defineGetter__('actions', function Astronaut_getactions() {
             if (!this._actions) {
                 var self = this;
-                var actions = new ActionsDefault(this); 
-                actions.turn = new Action(function getTurn() {
-                    // Block until a move has been made by the player...
-                }, self);
-                // The move actions...
-                actions.left = new Action(function levelLeft() {
-                    this.attemptMove('left');
-                }, self);
-                actions.right = new Action(function levelRight() {
-                    this.attemptMove('right');
-                }, self);
-                actions.up = new Action(function levelUp() {
-                    this.attemptMove('up');
-                }, self);
-                actions.down = new Action(function levelDown() {
-                    this.attemptMove('down');
-                }, self);
-                this._actions = actions;
+                this._actions = {
+                    turn : new Action(function getTurn() {
+                        // Block until a move has been made by the player...
+                    }, self),
+                    left : new Action(function showLeft() {
+                        this.view.toon.sprites[0].frameNdx = 6;
+                    }, self),
+                    right : new Action(function showRight() {
+                        this.view.toon.sprites[0].frameNdx = 5;
+                    }, self),
+                    up : new Action(function showUp() {
+                        this.view.toon.sprites[0].frameNdx = 7;
+                    }, self),
+                    down : new Action(function showDown() {
+                        this.view.toon.sprites[0].frameNdx = 4;
+                    }, self),
+                   setNdx : new Action(function setNdxFromTo_Astro(from, to) {
+                        // Animate the movement...
+                        this.steps.push(to);
+                        this.level.actorMap[from] = false;
+                        this.level.actorMap[to] = this;
+
+                        var nextPos = this.level.positionOfActorWithIndex(to);
+                        var self = this;
+                        var move = new Ease({
+                            target : self.view,
+                            duration : 400,
+                            equation : Ease.easeInOutCirc,
+                            properties : {
+                                x : nextPos[0],
+                                y : nextPos[1]
+                            },
+                            onComplete : function setNdxFromTo_AstroCB() {
+                                self.view.toon.sprites[0].frameNdx -= 4;
+                                self.level.turnOver();
+                            }
+                        }).interpolate();
+                    }, self)
+                };
             }
             return this._actions;
+        });
+        /** * *
+        * Gets the reactor property.
+        * More...
+        * @returns {Reactor} reactor 
+        * * **/
+        Astronaut.prototype.__defineGetter__('reactor', function Astronaut_getreactor() {
+            if (!this._reactor) {
+                this._reactor = new Reactor();
+
+                var defaultActions = new ActionsDefault(this);
+                delete defaultActions.turn;
+
+                var moveActions = new MoveActions(this);
+                delete moveActions['setNdx'];
+
+                this._reactor.addActionBundle(defaultActions);
+                this._reactor.addActionBundle(moveActions);
+                this._reactor.addActionBundle(this.actions);
+            }
+            return this._reactor;
         });
         //-----------------------------
         //  METHODS

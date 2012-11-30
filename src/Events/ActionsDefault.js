@@ -32,10 +32,6 @@ mod({
             }, actionOwner);
             this.interact = new Action(function mingleIdly(actor) {
                 console.log('The',this.name,'mingled idly with the',actor.name);
-                actor.react('counteract', this);
-            }, actionOwner);
-            this.counteract = new Action(function enjoyMingling(actor) {
-                console.log('The',this.name,'enjoyed mingling idly with the',actor.name);
                 this.level.turnOver();
             }, actionOwner);
         }

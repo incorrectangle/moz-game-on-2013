@@ -13,7 +13,7 @@ mod({
     /** * *
     * Initializes the Reactor constructor.
     * * **/
-    init : function initReactorConstructor(Actor) {
+    init : function initReactorConstructor(Action) {
         /** * *
         * Constructs new Reactors.
         * @constructor
@@ -24,13 +24,39 @@ mod({
         * * **/ 
         function Reactor(actions) {
             actions = actions || {};
-            for (var eventName in actions) {
-                this.addAction(eventName, actions[eventName]);
-            }
+            this.addActionBundle(actions);
         }
 
         Reactor.prototype = {}; 
         Reactor.prototype.constructor = Reactor;
+        //-----------------------------
+        //  STATIC METHODS
+        //-----------------------------
+        /** * *
+        * Sets the actor on a bundle of actions.
+        * @param {Object.<String, Action>} actions
+        * @param {Object} actor
+        * * **/
+        Reactor.bindActorForActions = function Reactor_bindActorForActions(actor, actions) {
+            for (var eventName in actions) {
+                actions[eventName].actor = actor;
+            };    
+        };
+        /** * *
+        * Copies the actions it the bundle and produces an new bundle
+        * bound to the given actor.
+        * @param {Object.<String, Action>} bundle
+        * @param {Actor} actor
+        * * **/
+        Reactor.copyActionsAndBind = function Reactor_copyActionsAndBind(bundle, actor) {
+            var copyBundle = {};
+            for (var eventName in bundle) {
+                var action = bundle[eventName];
+                var copyAction = new Action(action.response, actor);
+                copyBundle[eventName] = copyAction;
+            }; 
+            return copyBundle;
+        };
         //-----------------------------
         //  METHODS
         //-----------------------------
@@ -47,6 +73,15 @@ mod({
             } else {
                 this.actions[eventName] = [action];
             }
+        };
+        /** * *
+        * Adds a bundle of actions.
+        * @param {Object.<String, Action>} bundle
+        * * **/
+        Reactor.prototype.addActionBundle = function Reactor_addActionBundle(bundle) {
+            for (var eventName in bundle) {
+                this.addAction(eventName, bundle[eventName]);
+            };
         };
         /** * *
         * Removes an action from the actions list.
@@ -70,15 +105,17 @@ mod({
         * @param {...} rest To be given to the receiving Action.
         * * **/
         Reactor.prototype.react = function Reactor_react(eventName) {
+            var result = false;
             if (eventName in this.actions) {
                 for (var i=0; i < this.actions[eventName].length; i++) {
                     var action = this.actions[eventName][i];
                     var params = Array.prototype.slice.call(arguments) || [];
                     // Get rid of the eventName...
                     params.shift();
-                    action.respond.apply(action, params);
+                    result = action.respond.apply(action, params);
                 }
             }
+            return result;
         };
         /** * *
         * Whether or not the reactor reacts to an event of the given name.

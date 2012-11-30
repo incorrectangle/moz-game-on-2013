@@ -1,5 +1,5 @@
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* Astronaut.js
+* AstronautView.js
 * The main this!
 * Copyright (c) 12 Schell Scivally. All rights reserved.
 * 
@@ -7,7 +7,7 @@
 * @since    Sat Nov 10 17:13:15 2012  
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * **/
 mod({
-    name : 'Astronaut',
+    name : 'AstronautView',
     dependencies : [ 
         'moon::View/Toon.js',
         'bang::Utils/Ease.js',
@@ -17,16 +17,16 @@ mod({
         'moon::View/Character.js'
     ],
     /** * *
-    * Initializes the Astronaut constructor.
+    * Initializes the AstronautView constructor.
     * * **/
-    init : function initAstronautConstructor(Toon, Ease, Sprite, Rectangle, View, Character) {
+    init : function initAstronautViewConstructor(Toon, Ease, Sprite, Rectangle, View, Character) {
         /** * *
-        * Constructs new Astronauts.
+        * Constructs new AstronautViews.
         * @constructor
         * @nosideeffects
-        * @return {Astronaut}
+        * @return {AstronautView}
         * * **/ 
-        function Astronaut(x, y) {
+        function AstronautView(x, y) {
             Character.call(this,x,y);
 
             var startX = 1;
@@ -52,18 +52,17 @@ mod({
             this.shadow = shadow;
 
             this.context.strokeStyle = 'rgba(255,0,0,0.5)';
-            this.context.strokeRect(0,0,32,32);
             this.addView(shadow);
             this.addView(this.toon);
             this.hover = this.idleHover(startX, startY).interpolate();
         }
 
-        Astronaut.prototype = new Character(); 
-        Astronaut.prototype.constructor = Astronaut;
+        AstronautView.prototype = new Character(); 
+        AstronautView.prototype.constructor = AstronautView;
         //-----------------------------
         //  METHODS
         //-----------------------------
-        Astronaut.prototype.idleHover = function Astronaut_idleHover(startX, startY) {
+        AstronautView.prototype.idleHover = function AstronautView_idleHover(startX, startY) {
             var toon = this.toon;
             var shadow = this.shadow;
             startX = startX || 0;
@@ -91,7 +90,7 @@ mod({
                 }
             })
         };
-        Astronaut.prototype.quickHover = function Astronaut_idleHover(startX, startY) {
+        AstronautView.prototype.quickHover = function AstronautView_idleHover(startX, startY) {
             var toon = this.toon;
             var shadow = this.shadow;
             startX = startX || 0;
@@ -119,6 +118,6 @@ mod({
                 }
             })
         };
-        return Astronaut;
+        return AstronautView;
     }
 });    
