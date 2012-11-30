@@ -140,6 +140,7 @@ mod({
                         // This is the 'Nothing' actor, which we should skip...
                         continue;
                     }
+                    actor.level = this;
                     this.actorsWithATurn.push(actor);
                 } 
             }
@@ -162,22 +163,59 @@ mod({
         * * **/
         Level.prototype.turnOver = function Level_turnOver() {
             this.actorWithFocus.hasFocus = false;
-            var hasAtLeastOneAstronaut = false;
+            var numberOfAstros = 0;
             for (var i=0; i < this.actorMap.length; i++) {
                 var actor = this.actorMap[i];
                 if (actor) {
                     // Add it to the stage (z-sorting)...
                     this.actorView.addView(actor.view);
-                    hasAtLeastOneAstronaut = hasAtLeastOneAstronaut || (actor.name === 'Scooter');
+                    numberOfAstros += actor.name === 'Scooter' ? 1 : 0;
                 }
             }
-            if (hasAtLeastOneAstronaut) {
+            
+            if (numberOfAstros) {
                 var self = this;
                 setTimeout(function nextTurn() {
                     self.iterate();            
                 }, 1);
             } else {
                 this.gameOver();
+            }
+        };
+        /** * *
+        * Checks the win condition. If won, the next level will be loaded. 
+        * * **/
+        Level.prototype.checkWinCondition = function Level_checkWinCondition() {
+            var numberOfAstros = 0;
+            var numberOfKeys = 0;
+            for (var i=0; i < this.actorMap.length; i++) {
+                var actor = this.actorMap[i];
+                if (actor) {
+                    numberOfAstros += actor.name === 'Scooter' ? 1 : 0;
+                    numberOfKeys += actor.name === 'Key Cartridge' ? 1 : 0;
+                }
+            }
+
+            // Check the win condition...
+            if (numberOfAstros === 0) {
+                return this.gameOver();
+            } else if (numberOfKeys === 0) {
+                console.log('The Astronauts have collected all the keys...');
+                if (numberOfAstros !== 1) {
+                    console.log('    but in the end there can be only one!');
+                    console.log('...');
+                    console.log('*ahem* ...Astronaut!');
+                } else {
+                    console.log('YOU WIN LEVEL!');
+                    console.log('All your key carts are belong to you!');
+                    var nextLevel = this.levelsToLoad.shift();
+                    if (nextLevel) {
+                        this.load(nextLevel);
+                    } else {
+                        console.log('You have ventured through the depths of the Moonen. Congratulations. You are winner!');
+                        console.log('Now build some levels in the editor!');
+                    }
+                }
             }
         };
         /** * *

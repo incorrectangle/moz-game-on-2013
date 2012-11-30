@@ -56,27 +56,34 @@ mod({
         KeyCartridge.prototype.__defineGetter__('interact', function KeyCartridge_getinteract() {
             if (!this._interact) {
                 this._interact = new Action(function theKeyToMyHeart(whoGetsIt) {
+                    if (whoGetsIt.name === 'Moonen') {
+                        console.log('Noooooooooooo! The moonen ate a key! All is lost!');
+                        return this.level.gameOver();
+                    }
                     // The key is taken, but there can only be one highlander!
                     var selfNdx = this.level.actorMap.indexOf(this);
                     var whosNdx = this.level.actorMap.indexOf(whoGetsIt);
-                    whoGetsIt.react('setNdx',whosNdx, selfNdx);
                     this.level.removeActor(this);
+                    this.view.parent.addView(this.view);
 
                     var self = this;
                     new Ease({
-                        delay : 500,
+                        delay : 300,
                         target : self.view,
                         properties : {
                             scaleX : 2,
                             scaleY : 2,
-                            y : self.view.y + 50,
-                            x : self.view.x - self.view.width
+                            y : self.view.y - 60,
+                            x : self.view.x - 16,
+                            alpha : 0
                         },
                         onComplete : function removeBigAssKeyRightDurrr() {
                             self.view.parent.removeView(self.view);
+                            whoGetsIt.react('setNdx',whosNdx, selfNdx);
+                            self.level.checkWinCondition();
                         }
                     }).interpolate();
-                });
+                }, this);
             }
             return this._interact;
         });

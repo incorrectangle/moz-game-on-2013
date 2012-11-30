@@ -197,8 +197,8 @@ mod({
                             console.log('    and they both died!!!');
                             this.level.removeActor(this);
                             this.level.removeActor(actor);
-                            actor.view.parent.removeView(actor);
-                            this.view.parent.removeView(this);
+                            this.view.parent.removeView(this.view);
+                            actor.view.parent.removeView(actor.view);
                         } else {
                             var r = (this.pixelColor.r + actor.pixelColor.r)%256;
                             var g = (this.pixelColor.g + actor.pixelColor.g)%256;
@@ -208,8 +208,8 @@ mod({
                             var selfNdx = this.level.actorMap.indexOf(this);
                             var turnNdx = this.level.actorsWithATurn.indexOf(this);
                             // Take both out...
-                            this.level.removeActor(actor);
                             this.level.removeActor(this);
+                            this.level.removeActor(actor);
                             this.view.parent.removeView(this.view);
                             actor.view.parent.removeView(actor.view);
                             // Make the new one...

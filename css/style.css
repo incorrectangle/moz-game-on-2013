@@ -1,0 +1,63 @@
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * style.css
+ * The Moonening Game & Editor CSSsss... 
+ * Copyright (c) 2012 Schell Scivally. All rights reserved.
+ * 
+ * @author   Schell Scivally 
+ * @since    Fri Nov 30 09:51:37 2012
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * **/
+body {
+    background-color: #AAAAAA;
+    margin:0px;
+    padding:0px;
+    font-family: Verdana,Geneva,Arial,sans-serif;
+    font-size: 12px;
+    line-height: 15px;
+}
+#moonening {
+    background-color:black;
+    z-index:1;
+    position:absolute;
+    top:32px;
+    left:50%;
+    margin-left:-256px;
+    width:512px;
+    text-align:center;
+}
+.level-link {
+    float:left;
+}
+.right-panel {
+    color:white;
+    position:absolute;
+    top:0;
+    right:0;
+    z-index:0;
+    text-align:left;
+}
+
+.left-panel {
+    color:white;
+    position:absolute;
+    top:0;
+    left:0;
+    z-index:0;
+    text-align:left;
+    width:50%;
+    margin-right:256px;
+}
+a {
+    font-weight:bold;
+    color:#aed646;
+    text-decoration:none;
+}
+a:hover {
+    color:#4b8f43;
+    background:#aed646;
+}
+fieldset {
+    background-color:#484848;
+}
+legend {
+    font-weight:bold;
+}

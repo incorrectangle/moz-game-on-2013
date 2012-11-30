@@ -239,18 +239,11 @@ mod({
             document.getElementById('output').innerText = JSON.stringify(this.JSONObject);
         };
         /** * *
-        * Prints the level to an image.
-        * @return HTMLImageElement
-        * * **/
-        Level.prototype.levelAsImage = function Level_levelAsImage() {
-            var text = JSON.stringify(this.JSONObject); 
-            return Utils.StringToImage(text);
-        };                                        
-        /** * *
         * Saves the current level.
         * * **/
         Level.prototype.store = function Level_store() {
-            this.name = window.prompt('Please name this level:', this.name);
+            this.name = window.prompt('Please name this level:', this.name).replace(/ /g, '');
+            this.description = window.prompt('And a brief description:', '...');
             var levels = JSON.parse(localStorage.getItem('levels')) || {};
             levels[this.name] = this.JSONObject;
             localStorage.setItem('levels',JSON.stringify(levels));
@@ -282,6 +275,7 @@ mod({
         * * **/
         Level.prototype.fromJSONObject = function Level_fromJSONObject(obj) {
             this.name = obj.name;
+            this.description = obj.description;
             // Now populate them with the new level's values...
             this.mapView.tileNdx = obj.floor;
             this.actorView.tileNdx = obj.actors;
@@ -352,7 +346,7 @@ mod({
                     '<fieldset>',
                     '<legend>Stored Levels</legend>',
                     this.levels.map(function(level) {
-                        return '<a href="#" id="'+level.name+' onclick="editor.load(\''+level.name+'\')">'+level.name+'</a>&nbsp;';
+                        return '<a style="float:left; margin-right:1em;" href="#" class="'+level.name+'" onclick="editor.load(\''+level.name+'\')">'+level.name+'<br /></a>&nbsp;';
                     }).join(''),
                     '</fieldset>',
                     '<fieldset>',
@@ -376,6 +370,15 @@ mod({
                     'height:100%;',
                     'color:white;'
                 ].join('');
+                var images = this.levels.map(function imagefyLevels(level) {
+                    var image = Utils.StringToImage(JSON.stringify(level));
+                    image.alt = 'A moonening map named '+level.name;
+                    image.id = level.name;
+                    var els = Array.prototype.slice.call(helpPanel.getElementsByClassName(level.name));
+                    var el = els.shift();
+                    el.appendChild(image);
+                    return image;
+                });
                 this._helpPanel = helpPanel;
             }
             return this._helpPanel;

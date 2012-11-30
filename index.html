@@ -3,40 +3,7 @@
     <head>
         <meta http-equiv="Content-type" content="text/html; charset=utf-8">
         <title>.:Moonening:.</title>
-        <style type="text/css" media="screen">
-            body {
-                    background-color: #AAAAAA;
-        			margin:0px;
-                    padding:0px;
-        			font-family: Verdana,Geneva,Arial,sans-serif;
-        			font-size: 12px;
-        			line-height: 15px;
-                    text-align:center;
-        		}
-            canvas {
-                background-color:transparent;
-                margin-top:0px;
-                padding:0px;
-            }
-            #bang {
-                background-color:black;
-            }
-            a {
-                font-weight:bold;
-                color:#aed646;
-                text-decoration:none;
-            }
-            a:hover {
-                color:#4b8f43;
-                background:#aed646;
-            }
-            fieldset {
-                background-color:#484848;
-            }
-            legend {
-                font-weight:bold;
-            }
-        </style>
+        <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8">
         <script src="submodules/bang/mod.js" type="text/javascript" charset="utf-8"></script>
         <link rel="shortcut icon" href="favicon.png" />
     </head>
@@ -44,7 +11,6 @@
         
         <div id="bang"></div>
         <script type="text/javascript" charset="utf-8">
-var testLevel = {"constructor":"Level","name":"Test","floor":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"actors":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"ceiling":false}; 
             mod.useTagInjection = true;
             mod.expansions = {
                 bang : 'submodules/bang/src/',
@@ -57,9 +23,11 @@ var testLevel = {"constructor":"Level","name":"Test","floor":[0,0,0,0,0,0,0,0,0,
                 ],
                 init : function initMain (Moonening) {
                     try {
-                        var moonening = new Moonening();
+                        var moonening = new Moonening([
+                            'levels/keycart.png',
+                            'levels/wowza.png'
+                        ]);
                         moonening.init();
-                        moonening.loadLevel(testLevel);
                         window.moonening = moonening;
                         mod.exportAll();
                     } catch (e) {

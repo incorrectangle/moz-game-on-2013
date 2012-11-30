@@ -105,13 +105,28 @@ mod({
                 this.mouseActions[eventName] = [action];
             }
         };
+        //-----------------------------
+        //  GETTERS/SETTERS
+        //-----------------------------
         /** * *
-        * Adds a new layer to the game.
-        * @param {Array.<GameObject>}
+        * Gets the logPanel property.
+        * 
+        * @returns {HTMLDivElement} logPanel 
         * * **/
-        Game.prototype.addObjectMap = function Game_addObjectMap(map) {
-                        
-        };
+        Game.prototype.__defineGetter__('logPanel', function Game_getlogPanel() {
+            if (!this._logPanel) {
+                var panel = document.createElement('fieldset');
+                panel.id = 'log';
+                panel.className = 'left-panel';
+                panel.innerHTML = [
+                    '<legend>',
+                    'Game Log',
+                    '</legend>'
+                ].join('');
+                this._logPanel = panel;
+            }
+            return this._logPanel;
+        });
         return Game;
     }
 });    
