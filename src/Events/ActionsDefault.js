@@ -9,12 +9,12 @@
 mod({
     name : 'ActionsDefault',
     dependencies : [ 
-        
+        'moon::Events/Action.js'        
     ],
     /** * *
     * Initializes the ActionsDefault constructor.
     * * **/
-    init : function initActionsDefaultConstructor() {
+    init : function initActionsDefaultConstructor(Action) {
         /** * *
         * Constructs new ActionsDefaults.
         * @constructor

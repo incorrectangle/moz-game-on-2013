@@ -23,7 +23,8 @@ mod({
         'moon::Objects/Astronaut.js',
         'moon::Objects/JoltCola.js',
         'moon::Objects/KeyCartridge.js',
-        'moon::Objects/Objects.js'
+        'moon::Objects/Objects.js',
+        'bang::Utils/Utils.js'
     ],
     /** * *
     * Initializes the Level constructor.
@@ -238,6 +239,14 @@ mod({
             document.getElementById('output').innerText = JSON.stringify(this.JSONObject);
         };
         /** * *
+        * Prints the level to an image.
+        * @return HTMLImageElement
+        * * **/
+        Level.prototype.levelAsImage = function Level_levelAsImage() {
+            var text = JSON.stringify(this.JSONObject); 
+            return Utils.StringToImage(text);
+        };                                        
+        /** * *
         * Saves the current level.
         * * **/
         Level.prototype.store = function Level_store() {
@@ -343,7 +352,7 @@ mod({
                     '<fieldset>',
                     '<legend>Stored Levels</legend>',
                     this.levels.map(function(level) {
-                        return '<a href="#" onclick="editor.load(\''+level.name+'\')">'+level.name+'</a>&nbsp;';
+                        return '<a href="#" id="'+level.name+' onclick="editor.load(\''+level.name+'\')">'+level.name+'</a>&nbsp;';
                     }).join(''),
                     '</fieldset>',
                     '<fieldset>',

@@ -16,7 +16,7 @@ mod({
     /** * *
     * Initializes the Actor constructor.
     * * **/
-    init : function initActorConstructor(MapPiece, Rectangle) {
+    init : function initActorConstructor(MapPiece, Rectangle, ActionsDefault) {
         /** * *
         * Constructs new Actors.
         * @constructor

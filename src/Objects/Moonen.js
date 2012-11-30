@@ -182,9 +182,8 @@ mod({
             if (!this._interact) {
                 this._interact = new Action(function eatSomethingComingAtYou(actor) {
                     if (actor.name === 'Scooter') {
-                        actor.react('die');
                         console.log('Die, Scooter!');
-                        return this.level.turnOver();
+                        return actor.react('die');
                     }
                     if (actor.name === 'Key Cartridge') {
                         // Game Over...
@@ -219,18 +218,19 @@ mod({
                             newMoonen.view.x = pos[0];
                             newMoonen.view.y = pos[1];
                             newMoonen.level = this.level;
+                            newMoonen.view.alpha = 0;
                             //newMoonen.view.alpha = 0;
                             this.level.actorMap[selfNdx] = newMoonen;
                             if (turnNdx !== -1) {
                                 this.level.actorsWithATurn.splice(turnNdx,0,newMoonen);
                             }
-                            //new Ease({
-                            //    target : newMoonen.view,
-                            //    properties : {
-                            //        alpha : 1
-                            //    },
-                            //    duration : 500
-                            //}).interpolate();
+                            new Ease({
+                                target : newMoonen.view,
+                                properties : {
+                                    alpha : 1
+                                },
+                                duration : 500
+                            }).interpolate();
                             console.log('    and they combined to make a',color.toCSSString(),'Moonen!!!');
                         }
                         return this.level.turnOver();

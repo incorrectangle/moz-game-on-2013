@@ -19,7 +19,8 @@ mod({
         'moon::Objects/Astronaut.js',
         'moon::Objects/JoltCola.js',
         'moon::Objects/KeyCartridge.js',
-        'moon::Events/Reactor.js'
+        'moon::Events/Reactor.js',
+        'bang::Utils/Ease.js'
     ],
     /** * *
     * Initializes the Level constructor.
@@ -27,7 +28,7 @@ mod({
     init : function initLevelConstructor(View, MapView, MapPiece, Action, 
                                          Actor, Moonen, Objects,
                                          Astronaut, JoltCola,
-                                         KeyCartridge, Reactor) {
+                                         KeyCartridge, Reactor, Ease) {
         /** * *
         * Constructs new Levels.
         * @constructor
@@ -50,6 +51,11 @@ mod({
             * @type {Actor}
             * * **/
             this.actorWithFocus = false;
+            /** * *
+            * The last loaded level.
+            * @param {Object}
+            * * **/
+            this.lastLevelLoaded = false;
         }
 
         Level.prototype = {}; 
@@ -69,7 +75,11 @@ mod({
                 'JoltCola' : JoltCola,
                 'Moonen' : Moonen
             };
-
+            while (this.actorView.displayList.length) {
+                var subview = this.actorView.displayList[0];
+                this.actorView.removeView(subview);
+            } 
+            this.lastLevelLoaded = levelObject;
             this.actorsWithATurn = [];
             this.actorMap = [];
             this.mapView.tileNdx = levelObject.floor;
@@ -148,21 +158,57 @@ mod({
             actor.reactor.react('turn');
         };
         /** * *
-         * Cleans up after a turn.
-         * * **/
+        * Cleans up after a turn.
+        * * **/
         Level.prototype.turnOver = function Level_turnOver() {
             this.actorWithFocus.hasFocus = false;
+            var hasAtLeastOneAstronaut = false;
             for (var i=0; i < this.actorMap.length; i++) {
                 var actor = this.actorMap[i];
                 if (actor) {
                     // Add it to the stage (z-sorting)...
                     this.actorView.addView(actor.view);
+                    hasAtLeastOneAstronaut = hasAtLeastOneAstronaut || (actor.name === 'Scooter');
                 }
             }
+            if (hasAtLeastOneAstronaut) {
+                var self = this;
+                setTimeout(function nextTurn() {
+                    self.iterate();            
+                }, 1);
+            } else {
+                this.gameOver();
+            }
+        };
+        /** * *
+        * Game over sequence handler.
+        * * **/
+        Level.prototype.gameOver = function Level_gameOver() {
             var self = this;
-            setTimeout(function nextTurn() {
-                self.iterate();            
-            }, 1);
+            new Ease({
+                target : this.view,
+                properties : {
+                    alpha : 0,
+                    scaleX : 0.1,
+                    scaleY : 0.1,
+                    x : 512/2 - 512 * 0.1,
+                    y : 512/2 - 512 * 0.1,
+                },
+                equation : Ease.easeOutExpo,
+                duration : 1000,
+                onComplete : function gameOverFadeOutComplete(ease) {
+                    self.load(self.lastLevelLoaded);
+                    ease.config.properties= {
+                        alpha : 1,
+                        scaleX : 1,
+                        scaleY : 1,
+                        x : 0,
+                        y : 0
+                    };
+                    ease.config.onComplete = function(){};
+                    ease.interpolate();
+                }
+            }).interpolate();
         };
         /** * *
          * Removes an actor from the game, but does not remove its view.

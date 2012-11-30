@@ -91,7 +91,7 @@ mod({
                     down : new Action(function showDown() {
                         this.view.toon.sprites[0].frameNdx = 4;
                     }, self),
-                   setNdx : new Action(function setNdxFromTo_Astro(from, to) {
+                    setNdx : new Action(function setNdxFromTo_Astro(from, to) {
                         // Animate the movement...
                         this.steps.push(to);
                         this.level.actorMap[from] = false;
@@ -112,10 +112,26 @@ mod({
                                 self.level.turnOver();
                             }
                         }).interpolate();
-                    }, self)
+                    }, self),
+                    interact : this.die
                 };
             }
             return this._actions;
+        });
+        /** * *
+        * Gets the die property.
+        * 
+        * @returns {Action} die 
+        * * **/
+        Astronaut.prototype.__defineGetter__('die', function Astronaut_getdie() {
+            if (!this._die) {
+                this._die = new Action(function dieYouCosmonautScum_exclamationMark() {
+                    this.level.removeActor(this);
+                    this.view.parent.removeView(this.view);
+                    this.level.turnOver();
+                }, this);
+            }
+            return this._die;
         });
         /** * *
         * Gets the reactor property.
@@ -135,6 +151,7 @@ mod({
                 this._reactor.addActionBundle(defaultActions);
                 this._reactor.addActionBundle(moveActions);
                 this._reactor.addActionBundle(this.actions);
+                this._reactor.addAction('die', this.die);
             }
             return this._reactor;
         });

@@ -54,6 +54,8 @@ mod({
             this.addKeyDownAction(40/* DOWN */, new Action(function down() {
                 this.level.reactor.react('down');
             }, this));
+            // Paint it black...
+            this.stage.context.fillRect(0,0,512,512);
             // Add the level to the stage...
             this.stage.addView(this.level.view);
         };

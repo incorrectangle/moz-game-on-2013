@@ -57,7 +57,7 @@ mod({
             var self = this;
             window.onresize = function windowResize() {
             };
-            document.body.addEventListener('keydown', function(e) {
+            document.body.addEventListener('keyup', function(e) {
                 var actions = self.keyDownActions[e.keyCode];
                 if (actions) {
                     for (var i=0; i < actions.length; i++) {
