@@ -112,6 +112,26 @@ mod({
             * @type {boolean}
             * * **/
             this.isVisible = true;
+            /** * *
+            * The start frame of the animation.
+            * @type {number}
+            * * **/
+            this.firstFrame = 0;
+            /** * *
+            * The end frame of the animation.
+            * @type {number}
+            * * **/
+            this.lastFrame = 0;
+            /** * *
+            * The number of frames to play before calling onComplete.
+            * @type {number}
+            * * **/
+            this.framesToPlay = 0;
+            /** * *
+            * The function to run when the number of frames has been reached.
+            * @type {function}
+            * * **/
+            this.onComplete = false;
         }  
 
         Sprite.prototype = new View();
@@ -156,6 +176,9 @@ mod({
         * * **/
         Sprite.prototype.updateContextWithCurrentFrame = function Sprite_updateContextWithCurrentFrame() {
             var ndx = Math.floor(this.frameNdx);
+            if (this.lastFrame && (this.firstFrame < this.lastFrame)) {
+                ndx += this.firstFrame;
+            }
             var frame = this.frames[ndx];
             var sx = frame.left();
             var sy = frame.top();
@@ -165,6 +188,8 @@ mod({
             var dh = this.height;
             this.context.clearRect(0, 0, dw, dh);
             this.context.drawImage(this.sheet, sx, sy, sw, sh, 0, 0, dw, dh);
+            
+            
         };
         /** * *
         * Returns the number of milliseconds per frame.
@@ -192,8 +217,12 @@ mod({
             if (this.isPlaying) {
                 var framesElapsed = this.numberOfFramesSince(this.lastFrameTimeStamp);
                 var nextFrame = framesElapsed + this.frameNdx;
-                if (nextFrame >= this.frames.length) {
-                    nextFrame = nextFrame % this.frames.length;
+                var width = this.frames.length;
+                if (this.lastFrame && (this.firstFrame < this.lastFrame)) {
+                    width = this.lastFrame - this.firstFrame + 1;
+                }
+                if (nextFrame >= width) {
+                    nextFrame = nextFrame % width; 
                 }
 
                 var floorNdx = Math.floor(this.frameNdx);
@@ -206,6 +235,12 @@ mod({
                 // Play the frame functions...
                 for (var funcName in this.frameFunctions[ndx]) {
                     this.frameFunctions[ndx][funcName]();            
+                }
+                if (this.framesToPlay > 0) {
+                    this.framesToPlay -= framesElapsed;
+                    if (this.framesToPlay <= 0 && this.onComplete) {
+                        this.onComplete();
+                    }
                 }
             }
         };

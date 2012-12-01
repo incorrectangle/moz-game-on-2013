@@ -14,12 +14,13 @@ mod({
         'moon::View/Filters.js',
         'moon::Events/Action.js',
         'moon::Events/ActionsThatMoveActors.js',
-        'moon::View/MoonenMinor.js'
+        'moon::View/MoonenView.js',
+        'bang::Utils/Ease.js'
     ],
     /** * *
     * Initializes the Moonen constructor.
     * * **/
-    init : function initMoonenConstructor(Actor, Rectangle, Filters, Action, MoveActions) {
+    init : function initMoonenConstructor(Actor, Rectangle, Filters, Action, MoveActions, MoonenView, Ease) {
         /** * *
         * Constructs new Moonens.
         * @constructor
@@ -76,6 +77,8 @@ mod({
             }
             this.iconView.reactor.addAction('onSpriteSheetLoad', colorizeAction(this.iconView));
             this.view.reactor.addAction('onSpriteSheetLoad', colorizeAction(this.view));
+
+            this.view.lastFrame = 1;
         }
 
         Moonen.prototype = new Actor();
@@ -94,12 +97,12 @@ mod({
         * 
         * @returns {MoonenMinor} view 
         * * **/
-        //Moonen.prototype.__defineGetter__('view', function Moonen_getview() {
-        //    if (!this._view) {
-        //        this._view = new MoonenMinor();
-        //    }
-        //    return this._view;
-        //});
+        Moonen.prototype.__defineGetter__('view', function Moonen_getview() {
+            if (!this._view) {
+                this._view = new MoonenView();
+            }
+            return this._view;
+        });
         /** * *
         * Gets the turn property.
         * More...
@@ -174,6 +177,78 @@ mod({
             return this._turn;
         });
         /** * *
+        * Gets the showMoveActions property.
+        * More...
+        * @returns {Object.<String, Action>} showMoveActions 
+        * * **/
+        Moonen.prototype.__defineGetter__('showMoveActions', function Moonen_getshowMoveActions() {
+            if (!this._showMoveActions) {
+                var self = this;
+                this._showMoveActions = {
+                    left : new Action(function showLeft() {
+                        this.view.frameNdx = 1;
+                    }, self),
+                    right : new Action(function showRight() {
+                        this.view.frameNdx = 0;
+                    }, self),
+                    up : new Action(function showUp() {
+                        this.view.frameNdx = 2;
+                    }, self),
+                    down : new Action(function showDown() {
+                        this.viewframeNdx = 0;
+                    }, self),
+                    setNdx : new Action(function setNdxFromTo_Astro(from, to, doesNotEndTurn) {
+                        // Animate the movement...
+                        this.steps.push(to);
+                        this.level.actorMap[from] = false;
+                        this.level.actorMap[to] = this;
+                        
+                        var previousFrame = this.view.frameNdx;
+                        switch (previousFrame) {
+                            case 0:
+                            case 1:
+                                this.view.frameNdx = 4;
+                            break;
+                            default:
+                                this.view.frameNdx = 5;
+                            break;
+                        }
+                        var nextPos = this.level.positionOfActorWithIndex(to);
+                        var self = this;
+                        var xmove = new Ease({
+                            target : self.view,
+                            duration : 200, 
+                            properties : {
+                                x : nextPos[0]
+                            },
+                            onComplete : function setNdxFromTo_AstroCB() {
+                                if (!doesNotEndTurn) {
+                                    self.level.turnOver();
+                                }
+                            }
+                        }).interpolate();
+                        var ymove = new Ease({
+                            target : self.view,
+                            duration : 100,
+                            equation : Ease.easeOutExpo,
+                            properties : {
+                                y : nextPos[1]-32
+                            },
+                            onComplete : function (ease) {
+                                ease.config.properties.y = nextPos[1];
+                                ease.config.equation = Ease.easeInExpo,
+                                ease.config.onComplete = function () {
+                                    self.view.frameNdx = previousFrame;
+                                };
+                                ease.interpolate();
+                            }
+                        }).interpolate();
+                    }, self),
+                };
+            }
+            return this._showMoveActions;
+        });
+        /** * *
         * Gets the interact property.
         * 
         * @returns {Action} interact 
@@ -200,15 +275,22 @@ mod({
                         var msg = actor.color+' '+actor.name+' jumped into and ate a '+this.color+' '+this.name;
                         if (this.pixelColor.isEqualTo(actor.pixelColor)) {
                             log(msg+'<br>&nbsp;and they both died!!!');
+                            var actorNdx = this.level.actorMap.indexOf(actor); 
+                            var selfNdx = this.level.actorMap.indexOf(this);
                             this.level.removeActor(this);
                             this.level.removeActor(actor);
-                            this.view.parent.removeView(this.view);
-                            actor.view.parent.removeView(actor.view);
+                            var self = this;
+                            actor.react('setNdx', actorNdx, selfNdx, true);
+                            setTimeout(function() {
+                                self.view.die();
+                                actor.view.die();
+                            }, 200);
                         } else {
                             var r = (this.pixelColor.r + actor.pixelColor.r)%256;
                             var g = (this.pixelColor.g + actor.pixelColor.g)%256;
                             var b = (this.pixelColor.b + actor.pixelColor.b)%256;
                             var color = new Filters.Pixel(r,g,b,255);
+                            console.log(color);
                             var actorNdx = this.level.actorMap.indexOf(actor); 
                             var selfNdx = this.level.actorMap.indexOf(this);
                             var turnNdx = this.level.actorsWithATurn.indexOf(this);
@@ -254,10 +336,13 @@ mod({
             if (!this._reactor) {
                 this._reactor = new Reactor();
 
-                var moveActions = new MoveActions(this);
-                this._reactor.addActionBundle(moveActions);
+                this._reactor.addActionBundle(this.showMoveActions);
                 this._reactor.addAction('turn', this.turn);
                 this._reactor.addAction('interact', this.interact);
+
+                var moveActions = new MoveActions(this);
+                delete moveActions['setNdx'];
+                this._reactor.addActionBundle(moveActions);
             }
             return this._reactor;
         });
