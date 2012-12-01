@@ -1,3 +1,4 @@
+
 THE MOONENING
 =============
 Synopsis
@@ -44,6 +45,9 @@ Tools
 -----
 I used a display list lib I wrote called bang, which uses a module system I wrote called mod. I had to make some edits 
 to bang during the development of the game (fixing typos). All of the code (mod, bang and the game) was written by myself.
+
+Ah! Some notes about the editor. I built and used the editor to build levels. You can save your levels in the help panel
+(which you can get to by using the / key), and then play them the next time you visit the game. You'll see.
 
 Credits
 -------
