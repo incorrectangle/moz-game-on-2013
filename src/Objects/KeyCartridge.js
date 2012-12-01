@@ -80,7 +80,6 @@ mod({
                         onComplete : function removeBigAssKeyRightDurrr() {
                             self.view.parent.removeView(self.view);
                             whoGetsIt.react('setNdx',whosNdx, selfNdx);
-                            self.level.checkWinCondition();
                         }
                     }).interpolate();
                 }, this);

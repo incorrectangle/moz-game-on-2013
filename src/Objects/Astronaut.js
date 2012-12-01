@@ -134,8 +134,8 @@ mod({
                 this._die = new Action(function dieYouCosmonautScum_exclamationMark() {
                     this.level.removeActor(this);
                     this.view.parent.removeView(this.view);
-                    this.level.turnOver();
                     this.level.checkWinCondition();
+                    this.level.turnOver();
                 }, this);
             }
             return this._die;

@@ -172,33 +172,11 @@ mod({
         Level.prototype.turnOver = function Level_turnOver() {
             this.actorWithFocus.hasFocus = false;
             var numberOfAstros = 0;
-            for (var i=0; i < this.actorMap.length; i++) {
-                var actor = this.actorMap[i];
-                if (actor) {
-                    // Add it to the stage (z-sorting)...
-                    this.actorView.addView(actor.view);
-                    numberOfAstros += actor.name === 'Scooter' ? 1 : 0;
-                }
-            }
-            
-            if (numberOfAstros) {
-                var self = this;
-                setTimeout(function nextTurn() {
-                    self.iterate();            
-                }, 1);
-            } else {
-                this.gameOver();
-            }
-        };
-        /** * *
-        * Checks the win condition. If won, the next level will be loaded. 
-        * * **/
-        Level.prototype.checkWinCondition = function Level_checkWinCondition() {
-            var numberOfAstros = 0;
             var numberOfKeys = 0;
             for (var i=0; i < this.actorMap.length; i++) {
                 var actor = this.actorMap[i];
                 if (actor) {
+                    this.actorView.addView(actor.view);
                     numberOfAstros += actor.name === 'Scooter' ? 1 : 0;
                     numberOfKeys += actor.name === 'Key Cartridge' ? 1 : 0;
                 }
@@ -208,14 +186,19 @@ mod({
             if (numberOfAstros === 0) {
                 return this.gameOver();
             } else if (numberOfKeys === 0) {
-                var msg = 'The Astronauts have collected all the keys...';
                 if (numberOfAstros !== 1) {
-                    log(msg+'    but in the end there can be only one!<br>...*ahem* ...Astronaut!');
+                    var self = this;
+                        setTimeout(function nextTurn() {
+                            self.iterate();            
+                    }, 1);
                 } else {
-                    log('YOU WIN LEVEL!');
-                    log('All your key carts are belong to you!');
                     this.levelComplete();
                 }
+            } else {
+                var self = this;
+                    setTimeout(function nextTurn() {
+                        self.iterate();            
+                }, 1);
             }
         };
         /** * *
