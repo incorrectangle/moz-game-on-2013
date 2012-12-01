@@ -183,7 +183,11 @@ mod({
                 this._interact = new Action(function eatSomethingComingAtYou(actor) {
                     if (actor.name === 'Scooter') {
                         log('The '+this.color+' '+this.name+' ate a poor Scooter!');
-                        actor.react('die');
+                        var selfNdx = this.level.actorMap.indexOf(this);
+                        var thatNdx = this.level.actorMap.indexOf(actor);
+                        this.level.removeActor(actor);
+                        this.level.actorView.removeView(actor.view);
+                        this.react('setNdx', selfNdx, thatNdx); 
                         return; 
                     }
                     if (actor.name === 'Key Cartridge') {

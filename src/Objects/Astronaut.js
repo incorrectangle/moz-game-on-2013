@@ -91,7 +91,7 @@ mod({
                     down : new Action(function showDown() {
                         this.view.toon.sprites[0].frameNdx = 4;
                     }, self),
-                    setNdx : new Action(function setNdxFromTo_Astro(from, to) {
+                    setNdx : new Action(function setNdxFromTo_Astro(from, to, doesNotEndTurn) {
                         // Animate the movement...
                         this.steps.push(to);
                         this.level.actorMap[from] = false;
@@ -109,14 +109,15 @@ mod({
                             },
                             onComplete : function setNdxFromTo_AstroCB() {
                                 self.view.toon.sprites[0].frameNdx -= 4;
-                                self.level.turnOver();
+                                if (!doesNotEndTurn) {
+                                    self.level.turnOver();
+                                }
                             }
                         }).interpolate();
                     }, self),
                     interact : new Action(function ifNotMyselfThenDie(actor) {
                         if (actor.name !== this.name) {
-                            log('The '+actor.name+' killed the defenseless Scooter =(','darkred','bigger','bold');
-                            this.react('die');
+                            actor.react('interact', this);
                         }
                     }, self)
                 };
