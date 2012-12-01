@@ -2,7 +2,7 @@ THE MOONENING
 =============
 Synopsis
 --------
-A moon settlement is sending a faint distress signal to Earth. A four person team is deployed from one of Earth's satellite bases to investigate the nature of the SOS. After penetrating the colony dome they find the settlement abandoned, but as the team works their way into the colony's spooky infrastructure they encounter formidable evil.
+A moon settlement is sending a faint distress signal to Earth. An astronaut is deployed from one of Earth's satellite bases to investigate the nature of the SOS. After penetrating the colony dome he finds the settlement abandoned, but as the team works their way into the colony's spooky infrastructure they encounter formidable evil.
 
 <img style="border:#333 4px solid" src="https://raw.github.com/incorrectangle/game-off-2012/master/img/storyboards/thecolony.jpg" width="400" />
 
