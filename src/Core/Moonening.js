@@ -184,7 +184,7 @@ mod({
             if (imagePath) {
                 this.loadLevelImage(imagePath);
             } else {
-                window.location.href = 'editor.html';
+                log('YOU WIN ALL LEVELS!','limegreen','1.5em','bold');
             }
         };
         return Moonening;
