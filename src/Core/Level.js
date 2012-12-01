@@ -20,7 +20,8 @@ mod({
         'moon::Objects/JoltCola.js',
         'moon::Objects/KeyCartridge.js',
         'moon::Events/Reactor.js',
-        'bang::Utils/Ease.js'
+        'bang::Utils/Ease.js',
+        'moon::Objects/Crate.js'
     ],
     /** * *
     * Initializes the Level constructor.
@@ -35,7 +36,7 @@ mod({
         * @nosideeffects
         * @return {Level}
         * * **/ 
-        function Level() {
+        function Level(finishedLevelCallback) {
             /** * *
             * A list of actors that are waiting for their turn.
             * @type {Array.<Actor>}
@@ -56,6 +57,10 @@ mod({
             * @param {Object}
             * * **/
             this.lastLevelLoaded = false;
+            /** * *
+            * The callback to call when a level is completed.
+            * * **/
+            this.levelComplete = finishedLevelCallback;
         }
 
         Level.prototype = {}; 
@@ -70,6 +75,7 @@ mod({
         Level.prototype.load = function Level_load(levelObject) {
             var constructors = {
                 'Actor' : Actor,
+                'Crate' : Crate,
                 'Astronaut' : Astronaut,
                 'KeyCartridge' : KeyCartridge,
                 'JoltCola' : JoltCola,
@@ -82,6 +88,7 @@ mod({
             this.lastLevelLoaded = levelObject;
             this.actorsWithATurn = [];
             this.actorMap = [];
+            this.actorWithFocus = false;
             this.mapView.tileNdx = levelObject.floor;
 
             var actorStartNdx = 0;
@@ -109,6 +116,7 @@ mod({
             }           
             this.view.needsDisplay = true;
 
+            log(levelObject.name+' : '+levelObject.description,'white','1.5em','bold');
             // Start the game!
             var self = this;
             setTimeout(function() {
@@ -208,13 +216,7 @@ mod({
                 } else {
                     console.log('YOU WIN LEVEL!');
                     console.log('All your key carts are belong to you!');
-                    var nextLevel = this.levelsToLoad.shift();
-                    if (nextLevel) {
-                        this.load(nextLevel);
-                    } else {
-                        console.log('You have ventured through the depths of the Moonen. Congratulations. You are winner!');
-                        console.log('Now build some levels in the editor!');
-                    }
+                    this.levelComplete();
                 }
             }
         };

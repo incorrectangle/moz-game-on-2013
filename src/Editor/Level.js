@@ -306,6 +306,7 @@ mod({
             return {
                 constructor : 'Level',
                 name : this.name,
+                description : this.description,
                 floor : this.mapView.tileNdx,
                 actors : this.actorView.tileNdx,
                 ceiling : false

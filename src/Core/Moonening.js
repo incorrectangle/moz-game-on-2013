@@ -25,11 +25,15 @@ mod({
         * @return {Moonening}
         * * **/ 
         function Moonening(levelImagePaths) {
+            var self = this;
+            function levelCompleteCallback() {
+                self.loadNextLevel();
+            }
             /** * *
             * The game's current level.
             * @type {Level} level
             * * **/
-            this.level = new Level();
+            this.level = new Level(levelCompleteCallback);
             /** * *
             * A list of levels made with the editor.
             * @type {Array.<Object>}
@@ -44,6 +48,25 @@ mod({
             * @type {Array.<Object>}
             * * **/
             this.levelsToLoad = levelImagePaths; 
+
+            /** * *
+            * A logging function!
+            * * **/
+            var log = document.createElement('div');
+            log.id = 'log';
+            document.body.appendChild(log);
+            window.log = function (msg, color, size, weight) {
+                msg = msg || '...';
+                color = color || 'charcoal';
+                size = size || '1em';
+                weight = weight || 'normal';
+                var span = [
+                    '<span style="color:'+color+'; font-size:'+size+'; font-weight:'+weight+';">',
+                    msg,
+                    '</span><br>'
+                ].join('');
+                log.innerHTML = span + log.innerHTML;
+            };
         }
 
         Moonening.prototype = new Game(); 
@@ -153,7 +176,17 @@ mod({
         Moonening.prototype.loadLevel = function Moonening_loadLevel(levelObject) {
             this.level.load(levelObject);
         };
-
+        /** * *
+        * Loads the next level.
+        * * **/
+        Moonening.prototype.loadNextLevel = function Moonening_loadNextLevel() {
+            var imagePath = this.levelsToLoad.shift();
+            if (imagePath) {
+                this.loadLevelImage(imagePath);
+            } else {
+                window.location.href = 'editor.html';
+            }
+        };
         return Moonening;
     }
 });    

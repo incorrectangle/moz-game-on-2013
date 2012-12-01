@@ -31,7 +31,7 @@ mod({
                 }, 1);
             }, actionOwner);
             this.interact = new Action(function mingleIdly(actor) {
-                console.log('The',this.name,'mingled idly with the',actor.name);
+                log('The '+this.name+' mingled idly with the '+actor.name);
                 this.level.turnOver();
             }, actionOwner);
         }

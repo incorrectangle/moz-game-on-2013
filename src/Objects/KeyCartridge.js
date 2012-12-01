@@ -57,7 +57,7 @@ mod({
             if (!this._interact) {
                 this._interact = new Action(function theKeyToMyHeart(whoGetsIt) {
                     if (whoGetsIt.name === 'Moonen') {
-                        console.log('Noooooooooooo! The moonen ate a key! All is lost!');
+                        log('Noooooooooooo! The moonen ate a key! All is lost!','red','2em','bold');
                         return this.level.gameOver();
                     }
                     // The key is taken, but there can only be one highlander!

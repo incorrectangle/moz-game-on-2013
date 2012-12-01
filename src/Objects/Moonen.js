@@ -182,19 +182,20 @@ mod({
             if (!this._interact) {
                 this._interact = new Action(function eatSomethingComingAtYou(actor) {
                     if (actor.name === 'Scooter') {
-                        console.log('Die, Scooter!');
-                        return actor.react('die');
+                        log('The '+this.color+' '+this.name+' ate a poor Scooter!');
+                        actor.react('die');
+                        return; 
                     }
                     if (actor.name === 'Key Cartridge') {
                         // Game Over...
-                        console.log(this.color,this.name,'ate the Key Cartridge!');
+                        log(this.color +' '+this.name+' ate the Key Cartridge!');
                         return this.level.turnOver();
                     }
                     if (actor.name === 'Moonen') {
                         // Consume each other...
-                        console.log(actor.color,actor.name,'jumped into and ate a',this.color,this.name);
+                        var msg = actor.color+' '+actor.name+' jumped into and ate a '+this.color+' '+this.name;
                         if (this.pixelColor.isEqualTo(actor.pixelColor)) {
-                            console.log('    and they both died!!!');
+                            log(msg+'<br>&nbsp;and they both died!!!');
                             this.level.removeActor(this);
                             this.level.removeActor(actor);
                             this.view.parent.removeView(this.view);
@@ -231,7 +232,7 @@ mod({
                                 },
                                 duration : 500
                             }).interpolate();
-                            console.log('    and they combined to make a',color.toCSSString(),'Moonen!!!');
+                            log(msg+'&nbsp;and they combined to make a '+color.toCSSString()+' Moonen!!!',color.toCSSString());
                         }
                         return this.level.turnOver();
                     }

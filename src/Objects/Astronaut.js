@@ -113,7 +113,12 @@ mod({
                             }
                         }).interpolate();
                     }, self),
-                    interact : this.die
+                    interact : new Action(function ifNotMyselfThenDie(actor) {
+                        if (actor.name !== this.name) {
+                            log('The '+actor.name+' killed the defenseless Scooter =(','darkred','bigger','bold');
+                            this.react('die');
+                        }
+                    }, self)
                 };
             }
             return this._actions;
@@ -129,6 +134,7 @@ mod({
                     this.level.removeActor(this);
                     this.view.parent.removeView(this.view);
                     this.level.turnOver();
+                    this.level.checkWinCondition();
                 }, this);
             }
             return this._die;
@@ -143,7 +149,8 @@ mod({
                 this._reactor = new Reactor();
 
                 var defaultActions = new ActionsDefault(this);
-                delete defaultActions.turn;
+                delete defaultActions['turn'];
+                delete defaultActions['interact'];
 
                 var moveActions = new MoveActions(this);
                 delete moveActions['setNdx'];

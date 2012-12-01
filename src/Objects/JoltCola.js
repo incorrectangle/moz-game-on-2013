@@ -57,7 +57,7 @@ mod({
                     'Moonen' : Moonen
                 };
                 this._duplicateActor = new Action(function duplicateByWayOfJoltCola(actor) {
-                    console.log('The',actor.name,'drank Jolt Cola! Twice the caffeine!!!');
+                    log('The '+actor.name+' drank Jolt Cola! <span color="darkorange"><b>Twice the caffeine!!!</b></span>');
                     var selfNdx = this.level.actorMap.indexOf(this);
                     var obj = actor.JSONObject;
                     var newActor = constructors[obj.constructor].fromJSONObject(obj);

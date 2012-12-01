@@ -10,7 +10,8 @@ mod({
     name : 'ActionsThatMoveActors',
     dependencies : [ 
         'moon::Events/Action.js',
-        'moon::Events/Reactor.js'
+        'moon::Events/Reactor.js',
+        'bang::Utils/Ease.js'
     ],
     /** * *
     * Initializes the ActionsThatMoveActors constructor.
@@ -74,10 +75,20 @@ mod({
                 this.level.actorMap[to] = this;
 
                 var nextPos = this.level.positionOfActorWithIndex(to);
-                this.view.x = nextPos[0];
-                this.view.y = nextPos[1];
-
-                this.level.turnOver();
+                
+                var self = this;
+                new Ease({
+                    target : self.view,
+                    properties : {
+                        x : nextPos[0],
+                        y : nextPos[1]
+                    },
+                    duration : Math.random()*1000,
+                    equation : Ease.easeInOutExpo,
+                    onComplete : function() {
+                    }
+                }).interpolate();
+                self.level.turnOver();
             }, actor);
         }
         ActionsThatMoveActors.prototype = {};         
