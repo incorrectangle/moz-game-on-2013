@@ -1,8 +1,5 @@
 THE MOONENING
 =============
-
-<img src="https://raw.github.com/incorrectangle/game-off-2012/master/img/title.png" alt="title" />
-
 Synopsis
 --------
 A moon settlement is sending a faint distress signal to Earth. A four person team is deployed from one of Earth's satellite bases to investigate the nature of the SOS. After penetrating the colony dome they find the settlement abandoned, but as the team works their way into the colony's spooky infrastructure they encounter formidable evil.
@@ -11,17 +8,49 @@ A moon settlement is sending a faint distress signal to Earth. A four person tea
 
 Gameplay
 --------
-This is a top down, turn based adventure. It combines fun multiplayer dungeon crawling with a spooky space feel.
-The player controls the four investigators simultaneously using each of their unique powers to overcome obstacles, monsters and bosses. 
+This is a top down, turn based puzzler. 
+The player controls a number of astronauts that must be piloted and sacrificed
+in the name of finding key cartridges. Why? Because these astronauts love cartridges. So. Much.
+
+To move your toons use up, down, left and right. 
+
+Here are some quick reviews that may confuse or enlighten:
+
+"Moonen eat astros."  - Scooter
+
+"Key carts are win."  - Scooter
+
+"There can be only one." - Highlander
 
 Why it satisfies github's theme requirements
 --------------------------------------------
-The four investigators' special powers are
+The game uses two main themes:
 
-* Telekinetic push
-* Telekinetic pull
-* Time reset
-* Character clone
+* Cloning
+* Merging
+* Jolt Cola
+
+And for those of you who are counting...
+
+
+...there is an editor! http://incorrectangle.github.com/game-off-2012/editor.html
+
+Warnings, requirements, existential dilemmas
+--------------------------------------------
+I developed the game in chrome, so it works best in chrome. The game is playable in firefox too, but the 
+editor doesn't work in firefox because of a difference in mouse events, I'm guessing. 
+
+Tools
+-----
+I used a display list lib I wrote called bang, which uses a module system I wrote called mod. I had to make some edits 
+to bang during the development of the game (fixing typos). All of the code (mod, bang and the game) was written by myself.
+
+Credits
+-------
+Code by Schell Scivally
+Music by James Barry
+Art by Alex Whitehurst
+Motivational Art by Evan Jonson
 
 Style, theme, and other inspirations
 --------------------------------
