@@ -208,14 +208,12 @@ mod({
             if (numberOfAstros === 0) {
                 return this.gameOver();
             } else if (numberOfKeys === 0) {
-                console.log('The Astronauts have collected all the keys...');
+                var msg = 'The Astronauts have collected all the keys...';
                 if (numberOfAstros !== 1) {
-                    console.log('    but in the end there can be only one!');
-                    console.log('...');
-                    console.log('*ahem* ...Astronaut!');
+                    log(msg+'    but in the end there can be only one!<br>...*ahem* ...Astronaut!');
                 } else {
-                    console.log('YOU WIN LEVEL!');
-                    console.log('All your key carts are belong to you!');
+                    log('YOU WIN LEVEL!');
+                    log('All your key carts are belong to you!');
                     this.levelComplete();
                 }
             }

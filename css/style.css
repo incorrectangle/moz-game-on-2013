@@ -14,6 +14,12 @@ body {
     font-size: 12px;
     line-height: 15px;
 }
+audio {
+    position:absolute;
+    right:0;
+    bottom:0;
+    z-index:666;
+}
 #moonening {
     background-color:black;
     z-index:1;
