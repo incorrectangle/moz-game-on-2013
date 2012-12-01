@@ -47,10 +47,10 @@ to bang during the development of the game (fixing typos). All of the code (mod,
 
 Credits
 -------
-Code by Schell Scivally
-Music by James Barry
-Art by Alex Whitehurst
-Motivational Art by Evan Jonson
+Code by Schell Scivally 
+Music by James Barry 
+Art by Alex Whitehurst 
+Motivational Art by Evan Jonson 
 
 Style, theme, and other inspirations
 --------------------------------
