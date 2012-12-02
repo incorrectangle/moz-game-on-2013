@@ -51,10 +51,17 @@ Ah! Some notes about the editor. I built and used the editor to build levels. Yo
 
 Credits
 -------
-Code by Schell Scivally 
-Music by James Barry 
-Art by Alex Whitehurst 
-Motivational Art by Evan Jonson 
+###Code
+Schell Scivally
+
+###Music 
+James Barry 
+
+###Art 
+Alex Whitehurst & Schell Scivally
+
+###Level Design
+Bryce Williams & Schell Scivally
 
 Style, theme, and other inspirations
 --------------------------------

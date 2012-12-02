@@ -282,8 +282,8 @@ mod({
                             var self = this;
                             actor.react('setNdx', actorNdx, selfNdx, true);
                             setTimeout(function() {
-                                self.view.die();
-                                actor.view.die();
+                                self.view.parent.removeView(self.view);
+                                actor.view.parent.removeView(actor.view);
                             }, 200);
                         } else {
                             var r = (this.pixelColor.r + actor.pixelColor.r)%256;
